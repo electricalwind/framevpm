@@ -34,7 +34,7 @@ public class BugCollector {
         git = new GitActions(datasetOfVuln.getProject().getOnlineRepository(), PATH_TO_GIT + project);
     }
 
-    public BugDataset getOrCreateBugDataset() throws IOException, ClassNotFoundException {
+    public BugDataset updateOrCreateBugDataset() throws IOException, ClassNotFoundException {
         BugDataset dataset = Utils.loadBugDataset(project.getName());
 
         Set<String> commits = listOfCommitsFromData7(datasetOfVuln);
@@ -64,17 +64,29 @@ public class BugCollector {
 
 
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
+        long time = System.currentTimeMillis();
+        System.out.println("Start Linux");
         Data7 dataset = updateOrCreateDatasetFor(CProjects.LINUX_KERNEL);
         BugCollector collector = new BugCollector(dataset);
-        Utils.saveBugDataset(collector.getOrCreateBugDataset());
+        Utils.saveBugDataset(collector.updateOrCreateBugDataset());
+        System.out.println("End Linux : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+        System.out.println("Start SystemD");
         dataset = updateOrCreateDatasetFor(CProjects.SYSTEMD);
         collector = new BugCollector(dataset);
-        Utils.saveBugDataset(collector.getOrCreateBugDataset());
+        Utils.saveBugDataset(collector.updateOrCreateBugDataset());
+        System.out.println("End SystemD : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+        System.out.println("Start Wireshark");
         dataset = updateOrCreateDatasetFor(CProjects.WIRESHARK);
         collector = new BugCollector(dataset);
-        Utils.saveBugDataset(collector.getOrCreateBugDataset());
+        Utils.saveBugDataset(collector.updateOrCreateBugDataset());
+        System.out.println("End Wireshark : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+        System.out.println("Start SSL");
         dataset = updateOrCreateDatasetFor(CProjects.OPEN_SSL);
         collector = new BugCollector(dataset);
-        Utils.saveBugDataset(collector.getOrCreateBugDataset());
+        Utils.saveBugDataset(collector.updateOrCreateBugDataset());
+        System.out.println("End SSL : " + (System.currentTimeMillis() - time));
     }
 }

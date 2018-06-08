@@ -10,12 +10,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static framevpm.Ressources.PATH_TO_SAVE_EXP;
+import static data7.Utils.checkFolderDestination;
+import static framevpm.Ressources.PATH_TO_SAVE_BD;
 
 public class Utils {
 
     public static void saveBugDataset(BugDataset dataset) throws IOException {
-        FileOutputStream fos = new FileOutputStream(PATH_TO_SAVE_EXP + dataset.getProject() + "-bugdataset.obj", false);
+        checkFolderDestination(PATH_TO_SAVE_BD);
+        FileOutputStream fos = new FileOutputStream(PATH_TO_SAVE_BD + dataset.getProject().getName() + "-bugdataset.obj", false);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(dataset);
         oos.close();
@@ -23,7 +25,7 @@ public class Utils {
     }
 
     public static BugDataset loadBugDataset(String project) throws IOException, ClassNotFoundException {
-        File file = new File(PATH_TO_SAVE_EXP + project + "-bugdataset.obj");
+        File file = new File(PATH_TO_SAVE_BD + project + "-bugdataset.obj");
         if (file.exists()) {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);

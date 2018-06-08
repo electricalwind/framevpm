@@ -15,7 +15,6 @@ import static data7.Utils.generateCommitOfInterest;
 public class BugIdDataset extends BugDataset implements Serializable {
     private static final long serialVersionUID = 20180608L;
 
-
     public BugIdDataset(Project project) {
         super(project);
     }
