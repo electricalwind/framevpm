@@ -43,10 +43,12 @@ public class BugCollector {
                 case 0:
                     BugRegExpDataset datasetR = new BugRegExpDataset(project);
                     datasetR.updateDataset(commits, git);
+                    git.close();
                     return datasetR;
                 default:
                     BugIdDataset datasetI = new BugIdDataset(project);
                     datasetI.updateDataset(datasetOfVuln.getBugToHash(), datasetOfVuln.getBugToCve(), git);
+                    git.close();
                     return datasetI;
             }
         } else {
@@ -58,28 +60,30 @@ public class BugCollector {
                     ((BugIdDataset) dataset).updateDataset(datasetOfVuln.getBugToHash(), datasetOfVuln.getBugToCve(), git);
                     break;
             }
+            git.close();
             return dataset;
         }
+
     }
 
 
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
         long time = System.currentTimeMillis();
-        System.out.println("Start Linux");
-        Data7 dataset = updateOrCreateDatasetFor(CProjects.LINUX_KERNEL);
-        BugCollector collector = new BugCollector(dataset);
-        Utils.saveBugDataset(collector.updateOrCreateBugDataset());
-        System.out.println("End Linux : " + (System.currentTimeMillis() - time));
-        time = System.currentTimeMillis();
-        System.out.println("Start SystemD");
-        dataset = updateOrCreateDatasetFor(CProjects.SYSTEMD);
-        collector = new BugCollector(dataset);
-        Utils.saveBugDataset(collector.updateOrCreateBugDataset());
-        System.out.println("End SystemD : " + (System.currentTimeMillis() - time));
+        /**System.out.println("Start Linux");
+         Data7 dataset = updateOrCreateDatasetFor(CProjectsInfo.LINUX_KERNEL);
+         BugCollector collector = new BugCollector(dataset);
+         Utils.saveBugDataset(collector.updateOrCreateBugDataset());
+         System.out.println("End Linux : " + (System.currentTimeMillis() - time));
+         time = System.currentTimeMillis();
+         System.out.println("Start SystemD");
+         dataset = updateOrCreateDatasetFor(CProjectsInfo.SYSTEMD);
+         collector = new BugCollector(dataset);
+         Utils.saveBugDataset(collector.updateOrCreateBugDataset());
+         System.out.println("End SystemD : " + (System.currentTimeMillis() - time));*/
         time = System.currentTimeMillis();
         System.out.println("Start Wireshark");
-        dataset = updateOrCreateDatasetFor(CProjects.WIRESHARK);
-        collector = new BugCollector(dataset);
+        Data7 dataset = updateOrCreateDatasetFor(CProjects.WIRESHARK);
+        BugCollector collector = new BugCollector(dataset);
         Utils.saveBugDataset(collector.updateOrCreateBugDataset());
         System.out.println("End Wireshark : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();

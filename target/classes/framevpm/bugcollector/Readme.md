@@ -72,29 +72,25 @@ The tool will put the bug dataset in the folder that you chose for the dataset t
 2. To call it from your code, just call 
 
 ```java 
-// creation update of the dataset
-Data7 dataset = updateOrCreateDatasetFor(CProjects.WIRESHARK);
-BugCollector collector = new BugCollector(dataset);
-BugDataset bdataset = collector.updateOrCreateBugDataset();
-Utils.saveBugDataset(bdataset);
 
-//simply loading a dataset
-Utils.loadBugDataset(CProjects.WIRESHARK.getName());
-
+Importer.updateOrCreateDatasetFor(aProject);
+// Projects are available in projects module
+//like CProjects.LINUX_KERNEL
 ``` 
     
+Note that on creation of the dataset it might be better for the largest project (Linux, Wireshark)to first clone the git repository using command line in your folder under the subfolder git (in the case of Linux, don't forget to rename Linux into linux_kernel)
 
 ## Statistics
 
 As of 5th June 2018
 
-| Projects   | Time to create | Dataset size |Number of BugId | Number of Commit | Number of FileFix| Number of Unique Buggy Files |
-|:----------:|:--------------:|:------------:|:--------------:|:----------------:|:----------------:|:----------------------------:|
-|Linux Kernel|56 mn           |481.8 MB      |                |                  |5.41              |5.34                          | 
-|Wireshark   |166mn           |1.96 GB           |                |                  |4.99              |5.01                          | 
-|OpenSSL     |19   mn         |576 MB           |                |                  |5.34              |5.42                          |
-|SystemD     |11 mn           |393,7 MB      |                |                  |5.76              |5.60                          | 
-|Total       |  mn            |   GB         |                |                  |5.375             |5.34                          |
+| Projects   | Time to create | Dataset size |Number of vulnerabilities | NoV with Fixes | average CVSS | avg CVSS with fixes | Number of Fix | Number of FileFix| Number of Unique Vulnerable Files |
+|:----------:|:--------------:|:------------:|:------------------------:|:--------------:|:------------:|:-------------------:|:-------------:|:----------------:|:---------------------------------:|
+|Linux Kernel|115 mn          |279.7 MB      |2082                      |1202            |5.41          |5.34                 |1332           | 2612             |1508                               |
+|Wireshark   |129 mn          |561.9 MB      | 531                      | 265            |4.99          |5.01                 | 850           |  987             | 221                               |
+|OpenSSL     |  8 mn          |173.3 MB      | 187                      | 126            |5.34          |5.42                 | 493           | 1018             | 164                               |
+|SystemD     |  2 mn          |  2.4 MB      |   9                      |   5            |5.76          |5.60                 |   5           |    6             |   5                               |
+|Total       |254 mn          |  1.0 GB      |2809                      |1598            |5.375         |5.34                 |2680           | 4623             |1898                               |
 
 
 

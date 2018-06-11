@@ -4,6 +4,7 @@ import data7.model.Data7;
 import data7.model.change.Commit;
 import data7.model.vulnerability.Vulnerability;
 import framevpm.bugcollector.model.BugDataset;
+import framevpm.releasebalancer.model.ProjectData;
 
 import java.io.*;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import static data7.Utils.checkFolderDestination;
 import static framevpm.Ressources.PATH_TO_SAVE_BD;
+import static framevpm.Ressources.PATH_TO_SAVE_PER_RELEASE_DATA;
 
 public class Utils {
 
@@ -30,6 +32,27 @@ public class Utils {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);
             BugDataset data = (BugDataset) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
+
+    public static void saveProjectData(ProjectData dataset) throws IOException {
+        checkFolderDestination(PATH_TO_SAVE_BD);
+        FileOutputStream fos = new FileOutputStream(PATH_TO_SAVE_PER_RELEASE_DATA + dataset.getProject() + "-perReleaseData.obj", false);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(dataset);
+        oos.close();
+        fos.close();
+    }
+
+    public static ProjectData loadProjectData(String project) throws IOException, ClassNotFoundException {
+        File file = new File(PATH_TO_SAVE_PER_RELEASE_DATA + project + "-perReleaseData.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            ProjectData data = (ProjectData) read.readObject();
             read.close();
             fileIn.close();
             return data;
