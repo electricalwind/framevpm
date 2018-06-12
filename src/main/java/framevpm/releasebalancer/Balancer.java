@@ -1,18 +1,24 @@
 package framevpm.releasebalancer;
 
+import data7.Exporter;
 import data7.Importer;
 import data7.model.Data7;
 import data7.model.change.Commit;
 import data7.model.vulnerability.Vulnerability;
+import data7.project.CProjects;
 import data7.project.ProjectFactory;
+import framevpm.Utils;
 import framevpm.bugcollector.BugCollector;
 import framevpm.bugcollector.model.BugDataset;
 import framevpm.releasebalancer.model.*;
+import framevpm.releasebalancer.project.CProjectsInfo;
 import framevpm.releasebalancer.project.ProjectInfoFactory;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+
+import static data7.Importer.updateOrCreateDatasetFor;
 
 /**
  *
@@ -41,7 +47,7 @@ public class Balancer {
 
     public ProjectData balance(boolean bugs) throws IOException, ClassNotFoundException, ParseException {
         System.out.println("Starting processing: " + project);
-        Data7 data7 = Importer.updateOrCreateDatasetFor(ProjectFactory.retrieveProjectInfo(project));
+        Data7 data7 = Exporter.loadDataset(project);
         prepareVuln(data7);
         if (bugs) {
             prepareBug(data7);
@@ -70,13 +76,13 @@ public class Balancer {
 
     private void prepareBug(Data7 data7) throws IOException, ClassNotFoundException {
         final int[] count = {0};
-        BugDataset bugDataset = new BugCollector(data7).updateOrCreateBugDataset();
+        BugDataset bugDataset = Utils.loadBugDataset(data7.getProject().getName());
         Set<Map.Entry<String, Commit>> bugds = bugDataset.getDataset().entrySet();
 
         for (Map.Entry<String, Commit> bug : bugds) {
             if (!vulnerabilityHash.contains(bug.getKey()) && commitMessageFiltering.add(bug.getValue().getMessage().toLowerCase())) {
                 Map.Entry<Long, String> release = releases.floorEntry(bug.getValue().getTimestamp());
-                if (release != null) {
+                if (releases.size() > 0) {
                     String rel = release.getValue();
                     ReleaseData releaseData = projectData.getOrCreateRelease(rel);
                     bug.getValue().getFixes().forEach(fileFix -> {
@@ -259,5 +265,28 @@ public class Balancer {
         return v;
     }
 
+
+    public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
+        long time = System.currentTimeMillis();
+        System.out.println("Start Linux");
+        Balancer balancer = new Balancer(CProjects.LINUX_KERNEL.getName());
+        Utils.saveProjectData(balancer.balance(true));
+        System.out.println("End Linux : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+        System.out.println("Start SystemD");
+        balancer = new Balancer(CProjects.SYSTEMD.getName());
+        Utils.saveProjectData(balancer.balance(true));
+        System.out.println("End SystemD : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+        System.out.println("Start Wireshark");
+        balancer = new Balancer(CProjects.WIRESHARK.getName());
+        Utils.saveProjectData(balancer.balance(true));
+        System.out.println("End Wireshark : " + (System.currentTimeMillis() - time));
+        time = System.currentTimeMillis();
+        System.out.println("Start SSL");
+        balancer = new Balancer(CProjects.OPEN_SSL.getName());
+        Utils.saveProjectData(balancer.balance(true));
+        System.out.println("End SSL : " + (System.currentTimeMillis() - time));
+    }
 
 }

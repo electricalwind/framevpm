@@ -4,7 +4,8 @@
 
 ## What is it?
 
-The balancer package is the first mandatory package that have to be use in the frameVPM framework. It splits the differents vulnerability fixes (and bugs if chosen so) according to the release of the software they affected.
+The balancer package is the first mandatory package in the frameVPM framework.
+Its role is to splits the different vulnerability fixes according to the release they affected and is as well use to prune the fixes to only keep the relevant ones.
     
 ## Why? 
 
@@ -17,7 +18,7 @@ Maven will handle the dependancy.
 
 ## How does it work ?
     
-
+### heuristics
 
 ## Dataset Structure
           

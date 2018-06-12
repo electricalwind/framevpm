@@ -88,30 +88,30 @@ Utils.loadBugDataset(CProjects.WIRESHARK.getName());
 
 As of 5th June 2018
 
-| Projects   | Time to create | Dataset size |Number of BugId | Number of Commit | Number of FileFix| Number of Unique Buggy Files |
-|:----------:|:--------------:|:------------:|:--------------:|:----------------:|:----------------:|:----------------------------:|
-|Linux Kernel|56 mn           |481.8 MB      |                |                  |5.41              |5.34                          | 
-|Wireshark   |166mn           |1.96 GB           |                |                  |4.99              |5.01                          | 
-|OpenSSL     |19   mn         |576 MB           |                |                  |5.34              |5.42                          |
-|SystemD     |11 mn           |393,7 MB      |                |                  |5.76              |5.60                          | 
-|Total       |  mn            |   GB         |                |                  |5.375             |5.34                          |
+| Projects   | Time to create | Dataset size | Number of Commit | Number of FileFix| Number of Unique Buggy Files |
+|:----------:|:--------------:|:------------:|:----------------:|:----------------:|:----------------------------:|
+|Linux Kernel|  56 mn         | 481.8  MB    |  3160            |  5193            | 2428                         | 
+|Wireshark   | 166 mn         |   1.96 GB    |  3871            |  8019            | 1907                         | 
+|OpenSSL     |  19 mn         | 576    MB    |  2442            |  7741            | 1733                         |
+|SystemD     |  11 mn         | 393.7  MB    |  1868            |  3538            |  925                         |
+|Total       | 252 mn         |   3.4  GB    | 11341            | 24491            | 6993                         |
 
 
 
 ### Top 10 Buggy Files
 
-| Rank | Linux                     | Wireshark                              | OpenSSL                    | SystemD                                |
-|:----:|:--------------------------|:---------------------------------------|:---------------------------|:---------------------------------------|
-| 1    | arch/x86/kvm/x86.c (17)   | epan/proto.c (24)                      | ssl/s3_clnt.c (53)         | src/resolve/resolved-dns-packet.c (2)  |
-| 2    | fs/namei.c (14)           | epan/dissectors/packet-nbap.c (19)     | ssl/s3_srvr.c (41)         | src/resolve/resolved-dns-packet.h (1)  |
-| 3    | net/socket.c (14)         | epan/dissectors/packet-ncp2222.inc (19)| ssl/d1_both.c (35)         | src/util.c (1)                         |
-| 4    | kernel/signal.c (14)      | epan/dissectors/packet-wccp.c (18)     | ssl/t1_lib.c (34)          | src/nss-mymachines/nss-mymachines.c (1)|
-| 5    | fs/namespace.c (14)       | epan/crypt/airpdcap.c (18)             | ssl/d1_pkt.c (22)          | src/tmpfiles/tmpfiles.c (1)            |
-| 6    | kernel/bpf/verifier.c (13)| epan/dissectors/packet-ber.c (17)      | crypto/asn1/tasn_dec.c (20)|                                        |
-| 7    | net/sctp/socket.c (13)    | epan/dissectors/packet-umts_fp.c (16)  | ssl/ssl.h (20)             |                                        |
-| 8    | fs/exec.c (13)            | epan/dissectors/packet-wbxml.c (15)    | ssl/s3_pkt.c (20)          |                                        |
-| 9    | arch/x86/kvm/vmx.c (13)   | epan/dissectors/packet-wsp.c (14)      | ssl/ssl_err.c (17)         |                                        |
-| 10   | fs/open.c (12)            | epan/dissectors/packet-wcp.c (13)      | crypto/x509/x509_vfy.c (16)|                                        |
+| Rank | Linux                                     | Wireshark                                | OpenSSL              | SystemD                          |
+|:----:|:------------------------------------------|:-----------------------------------------|:---------------------|:---------------------------------|
+| 1    | drivers/acpi/ec.c (96)                    | epan/dissectors/packet-ssl-utils.c (116) | ssl/s3_srvr.c (96)   | src/systemctl/systemctl.c (62)   |
+| 2    | sound/pci/hda/patch_realtek.c(79)         | ui/qt/main_window_slots.cpp (103)        | ssl/s3_clnt.c (88)   | src/network/networkd-link.c (52) |
+| 3    | drivers/acpi/video.c (57)                 | ui/qt/main_window.cpp (94)               | ssl/ssl_lib.c (79)   | Makefile.am (46)                 |
+| 4    | drivers/acpi/osl.c (36)                   | epan/dissectors/packet-ieee80211.c (91)  | apps/s_server.c (78) | man/systemd.exec.xml (45)        |
+| 5    | drivers/gpu/drm/i915/intel_display.c (33) |"epan/dissectors/packet-ssl-utils.h (76)  | ssl/ssl.h (67)       | meson.build (44)                 |
+| 6    | drivers/acpi/scan.c (31)                  | epan/dissectors/packet-tcp.c (66)        | apps/s_client.c (66) | man/systemd.network.xml (43)     |
+| 7    | drivers/acpi/sleep.c (30)                 | ui/qt/packet_list.cpp (63)               | ssl/t1_lib.c (62)    | src/nspawn/nspawn.c (43)         |
+| 8    | drivers/acpi/processor_idle.c (28)        | epan/dissectors/packet-ssl.c (61)        | ssl/s3_lib.c (62)    | hwdb/60-evdev.hwdb (37)          |
+| 9    | drivers/pci/quirks.c (26)                 | epan/proto.c (55)                        | ssl/ssl_locl.h (61)  | hwdb/60-sensor.hwdb (35)         |
+| 10   | drivers/ata/libata-core.c (24)            | epan/dissectors/packet-bgp.c (54)        | ssl/s3_pkt.c (51)    | src/core/manager.c (34)          |
 
 
 
