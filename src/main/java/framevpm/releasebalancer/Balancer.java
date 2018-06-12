@@ -82,7 +82,7 @@ public class Balancer {
         for (Map.Entry<String, Commit> bug : bugds) {
             if (!vulnerabilityHash.contains(bug.getKey()) && commitMessageFiltering.add(bug.getValue().getMessage().toLowerCase())) {
                 Map.Entry<Long, String> release = releases.floorEntry(bug.getValue().getTimestamp());
-                if (releases.size() > 0) {
+                if (release !=null) {
                     String rel = release.getValue();
                     ReleaseData releaseData = projectData.getOrCreateRelease(rel);
                     bug.getValue().getFixes().forEach(fileFix -> {

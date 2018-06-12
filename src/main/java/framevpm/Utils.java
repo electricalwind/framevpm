@@ -39,7 +39,7 @@ public class Utils {
     }
 
     public static void saveProjectData(ProjectData dataset) throws IOException {
-        checkFolderDestination(PATH_TO_SAVE_BD);
+        checkFolderDestination(PATH_TO_SAVE_PER_RELEASE_DATA);
         FileOutputStream fos = new FileOutputStream(PATH_TO_SAVE_PER_RELEASE_DATA + dataset.getProject() + "-perReleaseData.obj", false);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(dataset);
