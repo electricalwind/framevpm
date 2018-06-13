@@ -73,13 +73,13 @@ The tool will put the bug dataset in the folder that you chose for the dataset t
 
 ```java 
 // creation update of the dataset
-Data7 dataset = updateOrCreateDatasetFor(CProjects.WIRESHARK);
-BugCollector collector = new BugCollector(dataset);
-BugDataset bdataset = collector.updateOrCreateBugDataset();
-Utils.saveBugDataset(bdataset);
+ResourcesPathExtended path = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/");
+BugCollector bugCollector = new BugCollector(path);
+
+BugDataset bd = bugCollector.updateOrCreateBugDataset(projectName);
 
 //simply loading a dataset
-Utils.loadBugDataset(CProjects.WIRESHARK.getName());
+BugDataset bd = new ExporterExtended(resourcesPathExtended).loadBugDataset(CProjects.WIRESHARK.getName());
 
 ``` 
     
