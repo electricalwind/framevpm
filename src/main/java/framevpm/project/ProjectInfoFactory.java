@@ -1,9 +1,11 @@
-package framevpm.releasebalancer.project;
+package framevpm.project;
+
+import data7.project.CProjects;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-import static framevpm.releasebalancer.project.CProjectsInfo.*;
+import static framevpm.project.CProjectsInfo.*;
 
 public class ProjectInfoFactory {
 
@@ -32,6 +34,21 @@ public class ProjectInfoFactory {
                 return WIRESHARK_VERSION();
             case "systemd":
                 return SYSTEMD_VERSION();
+            default:
+                return null;
+        }
+    }
+
+    public static String retrieveProjectGithub(String name) {
+        switch (name) {
+            case "linux_kernel":
+                return CProjects.LINUX_KERNEL.getOnlineRepository();
+            case "openssl":
+                return CProjects.OPEN_SSL.getOnlineRepository();
+            case "wireshark":
+                return CProjects.WIRESHARK.getOnlineRepository();
+            case "systemd":
+                return CProjects.SYSTEMD.getOnlineRepository();
             default:
                 return null;
         }

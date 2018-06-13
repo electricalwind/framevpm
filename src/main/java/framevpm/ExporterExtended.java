@@ -1,8 +1,9 @@
 package framevpm;
 
 import data7.Exporter;
+import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.bugcollector.model.BugDataset;
-import framevpm.releasebalancer.model.ProjectData;
+import framevpm.organize.model.ProjectData;
 
 import java.io.*;
 
@@ -39,8 +40,8 @@ public class ExporterExtended extends Exporter {
     }
 
     public void saveProjectData(ProjectData dataset) throws IOException {
-        checkFolderDestination(resourcesPathExtended.getReleaseDataPath());
-        FileOutputStream fos = new FileOutputStream(resourcesPathExtended.getReleaseDataPath() + dataset.getProject() + "-perReleaseData.obj", false);
+        checkFolderDestination(resourcesPathExtended.getOrganizeData());
+        FileOutputStream fos = new FileOutputStream(resourcesPathExtended.getOrganizeData() + dataset.getProject() + "-organizedData.obj", false);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(dataset);
         oos.close();
@@ -48,11 +49,32 @@ public class ExporterExtended extends Exporter {
     }
 
     public ProjectData loadProjectData(String project) throws IOException, ClassNotFoundException {
-        File file = new File(resourcesPathExtended.getReleaseDataPath() + project + "-perReleaseData.obj");
+        File file = new File(resourcesPathExtended.getOrganizeData() + project + "-organizedData.obj");
         if (file.exists()) {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);
             ProjectData data = (ProjectData) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
+
+    public void saveProjectAnalysis(ProjectAnalysis dataset) throws IOException {
+        checkFolderDestination(resourcesPathExtended.getAnalysisPath());
+        FileOutputStream fos = new FileOutputStream(resourcesPathExtended.getAnalysisPath() + dataset.getProject() + "-analyzedData.obj", false);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(dataset);
+        oos.close();
+        fos.close();
+    }
+
+    public ProjectAnalysis loadProjectAnalysis(String project) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getAnalysisPath() + project + "-analyzedData.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            ProjectAnalysis data = (ProjectAnalysis) read.readObject();
             read.close();
             fileIn.close();
             return data;

@@ -1,29 +1,24 @@
-package framevpm.releasebalancer;
+package framevpm.organize;
 
-import data7.Exporter;
-import data7.Importer;
 import data7.model.Data7;
 import data7.model.change.Commit;
 import data7.model.vulnerability.Vulnerability;
 import data7.project.CProjects;
 import data7.project.ProjectFactory;
-import framevpm.Utils;
-import framevpm.bugcollector.BugCollector;
+import framevpm.ExporterExtended;
+import framevpm.ResourcesPathExtended;
 import framevpm.bugcollector.model.BugDataset;
-import framevpm.releasebalancer.model.*;
-import framevpm.releasebalancer.project.CProjectsInfo;
-import framevpm.releasebalancer.project.ProjectInfoFactory;
+import framevpm.organize.model.*;
+import framevpm.project.ProjectInfoFactory;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
-import static data7.Importer.updateOrCreateDatasetFor;
-
 /**
  *
  */
-public class Balancer {
+public class Organize {
 
     private final String project;
     private final ProjectData projectData;
@@ -31,9 +26,13 @@ public class Balancer {
     private final Set<String> vulnerabilityHash;
     private final TreeMap<Long, String> releases;
     private final Map<String, String> releasesCVE;
+    private final ResourcesPathExtended resourcesPathExtended;
+    private final ExporterExtended exporter;
 
 
-    public Balancer(String project) {
+    public Organize(ResourcesPathExtended resourcesPathExtended, String project) {
+        this.resourcesPathExtended = resourcesPathExtended;
+        this.exporter = new ExporterExtended(resourcesPathExtended);
         this.project = project;
         if (ProjectFactory.retrieveProjectInfo(project) == null) {
             throw new RuntimeException("Incorrect Project");
@@ -47,12 +46,13 @@ public class Balancer {
 
     public ProjectData balance(boolean bugs) throws IOException, ClassNotFoundException, ParseException {
         System.out.println("Starting processing: " + project);
-        Data7 data7 = Exporter.loadDataset(project);
+        Data7 data7 = exporter.loadDataset(project);
         prepareVuln(data7);
         if (bugs) {
             prepareBug(data7);
         }
         propagate();
+        exporter.saveProjectData(projectData);
         return projectData;
     }
 
@@ -76,13 +76,13 @@ public class Balancer {
 
     private void prepareBug(Data7 data7) throws IOException, ClassNotFoundException {
         final int[] count = {0};
-        BugDataset bugDataset = Utils.loadBugDataset(data7.getProject().getName());
+        BugDataset bugDataset = exporter.loadBugDataset(data7.getProject().getName());
         Set<Map.Entry<String, Commit>> bugds = bugDataset.getDataset().entrySet();
 
         for (Map.Entry<String, Commit> bug : bugds) {
             if (!vulnerabilityHash.contains(bug.getKey()) && commitMessageFiltering.add(bug.getValue().getMessage().toLowerCase())) {
                 Map.Entry<Long, String> release = releases.floorEntry(bug.getValue().getTimestamp());
-                if (release !=null) {
+                if (release != null) {
                     String rel = release.getValue();
                     ReleaseData releaseData = projectData.getOrCreateRelease(rel);
                     bug.getValue().getFixes().forEach(fileFix -> {
@@ -268,24 +268,25 @@ public class Balancer {
 
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
         long time = System.currentTimeMillis();
+        ResourcesPathExtended path = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/");
         System.out.println("Start Linux");
-        Balancer balancer = new Balancer(CProjects.LINUX_KERNEL.getName());
-        Utils.saveProjectData(balancer.balance(true));
+        Organize organize = new Organize(path, CProjects.LINUX_KERNEL.getName());
+        organize.balance(true);
         System.out.println("End Linux : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();
         System.out.println("Start SystemD");
-        balancer = new Balancer(CProjects.SYSTEMD.getName());
-        Utils.saveProjectData(balancer.balance(true));
+        organize = new Organize(path, CProjects.SYSTEMD.getName());
+        organize.balance(true);
         System.out.println("End SystemD : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();
         System.out.println("Start Wireshark");
-        balancer = new Balancer(CProjects.WIRESHARK.getName());
-        Utils.saveProjectData(balancer.balance(true));
+        organize = new Organize(path, CProjects.WIRESHARK.getName());
+        organize.balance(true);
         System.out.println("End Wireshark : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();
         System.out.println("Start SSL");
-        balancer = new Balancer(CProjects.OPEN_SSL.getName());
-        Utils.saveProjectData(balancer.balance(true));
+        organize = new Organize(path, CProjects.OPEN_SSL.getName());
+        organize.balance(true);
         System.out.println("End SSL : " + (System.currentTimeMillis() - time));
     }
 

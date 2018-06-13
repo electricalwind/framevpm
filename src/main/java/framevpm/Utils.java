@@ -3,21 +3,13 @@ package framevpm;
 import data7.model.Data7;
 import data7.model.change.Commit;
 import data7.model.vulnerability.Vulnerability;
-import framevpm.bugcollector.model.BugDataset;
-import framevpm.releasebalancer.model.ProjectData;
 
-import java.io.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static data7.Utils.checkFolderDestination;
-
 
 public class Utils {
-
-
-
 
     public static Set<String> listOfCommitsFromData7(Data7 data7) {
         Set<String> commits = new HashSet<>();
@@ -31,4 +23,7 @@ public class Utils {
         }
         return commits;
     }
+
+
+
 }

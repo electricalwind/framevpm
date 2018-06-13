@@ -1,4 +1,4 @@
-package framevpm.releasebalancer.model;
+package framevpm.organize.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
