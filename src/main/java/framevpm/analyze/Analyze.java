@@ -6,6 +6,7 @@ import data7.project.CProjects;
 import data7.project.ProjectFactory;
 import framevpm.ExporterExtended;
 import framevpm.ResourcesPathExtended;
+import framevpm.analyze.model.ApproachAnalysis;
 import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.organize.model.ProjectData;
 import framevpm.project.ProjectInfoFactory;
@@ -24,27 +25,30 @@ import java.util.TreeMap;
 import static framevpm.analyze.Resources.FILTER_FILES_EXTENSION;
 import static framevpm.analyze.Resources.FORBIDDEN;
 
-
+@SuppressWarnings("Duplicates")
 public abstract class Analyze {
 
+    protected final ApproachAnalysis approachAnalysis;
 
     protected final String project;
-    protected final GitActions git;
+    //protected final GitActions git;
     protected final Collection<String> releases;
     protected final ExporterExtended exporter;
     protected final ProjectData projectData;
+    protected final ResourcesPathExtended path;
     protected ProjectAnalysis projectAnalysis;
     protected String releasePath;
 
     public Analyze(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         this.project = project;
+        this.path = pathExtended;
         this.exporter = new ExporterExtended(pathExtended);
         TreeMap<Long, String> map = ProjectInfoFactory.retrieveProjectRelease(project);
         if (map == null) {
             throw new RuntimeException("invalid Project");
         }
         this.projectData = exporter.loadProjectData(project);
-        if(projectData==null){
+        if (projectData == null) {
             throw new RuntimeException("missing organized Data from organize package");
         }
         this.releases = map.values();
@@ -55,17 +59,14 @@ public abstract class Analyze {
             downloadAllVersionFor(project);
         }
         this.projectAnalysis = exporter.loadProjectAnalysis(project);
-        if(projectAnalysis == null){
+        if (projectAnalysis == null) {
             projectAnalysis = new ProjectAnalysis(project);
             exporter.saveProjectAnalysis(projectAnalysis);
         }
-
-        this.git = new GitActions(ProjectFactory.retrieveProjectInfo(project).getOnlineRepository(), pathExtended.getGitPath() + project);
-
+        approachAnalysis = projectAnalysis.getOrCreateApproachAnalysis(getApproachName());
     }
 
     private void downloadAllVersionFor(String project) {
-
         String github = ProjectInfoFactory.retrieveProjectGithub(project);
         for (String version : releases) {
             String file = releasePath + version + ".tar.gz";
@@ -79,12 +80,11 @@ public abstract class Analyze {
         if (version.startsWith("v")) {
             version = version.substring(1);
         }
-
         Map<String, String> fileMap = new HashMap<>();
         try {
             TarArchiveInputStream tar = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(releasePath + version + ".tar.gz")));
             TarArchiveEntry currentEntry = tar.getNextTarEntry();
-            BufferedReader br = null;
+            BufferedReader br;
             while (currentEntry != null) {
                 br = new BufferedReader(new InputStreamReader(tar)); // Read directly from tarInput
                 String file = currentEntry.getName();
@@ -108,6 +108,8 @@ public abstract class Analyze {
         return fileMap;
     }
 
-    public abstract ProjectAnalysis processFeatures();
+    public abstract ProjectAnalysis processFeatures() throws IOException;
+
+    public abstract String getApproachName();
 
 }

@@ -42,12 +42,27 @@
         <dependency>
             <groupId>lu.jimenez.research</groupId>
             <artifactId>data7</artifactId>
-            <version>1.1</version>
+            <version>1.3</version>
         </dependency>
         <dependency>
             <groupId>lu.jimenez.research</groupId>
             <artifactId>data7-miscUtils</artifactId>
-            <version>1.1</version>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>lu.jimenez.research</groupId>
+            <artifactId>tuna-tokenizer</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>lu.jimenez.research</groupId>
+            <artifactId>tuna-modelling</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>lu.jimenez.research</groupId>
+            <artifactId>FileMetrics</artifactId>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
