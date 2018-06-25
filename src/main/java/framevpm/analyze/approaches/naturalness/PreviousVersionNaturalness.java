@@ -4,6 +4,7 @@ import data7.Resources;
 import framevpm.ResourcesPathExtended;
 import framevpm.analyze.Analyze;
 import framevpm.analyze.approaches.naturalness.setup.NaturalnessSetup;
+import framevpm.analyze.model.ApproachAnalysis;
 import framevpm.analyze.model.FileAnalysis;
 import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.analyze.model.ReleaseAnalysis;
@@ -24,15 +25,19 @@ import java.util.concurrent.*;
 public class PreviousVersionNaturalness extends Analyze {
     private final static String NAME = "Previous Release Naturalness";
     private final NaturalnessSetup setup;
+    private final ApproachAnalysis approachAnalysis;
+
 
     public PreviousVersionNaturalness(ResourcesPathExtended pathExtended, String project, NaturalnessSetup setup) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
         this.setup = setup;
+        approachAnalysis = projectAnalysis.getOrCreateApproachAnalysis(getApproachName());
+
     }
 
     @Override
     public ProjectAnalysis processFeatures() throws IOException {
-        ExecutorService executor = Executors.newFixedThreadPool(Resources.NB_THREADS);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
         CompletionService<FileAnalysis> completionService = new ExecutorCompletionService(executor);
         System.out.println("Starting: " + getApproachName());
         try {

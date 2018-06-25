@@ -1,6 +1,8 @@
 package framevpm.analyze;
 
+import data7.Exporter;
 import data7.project.CProjects;
+import framevpm.ExporterExtended;
 import framevpm.ResourcesPathExtended;
 import framevpm.analyze.approaches.filebyfile.*;
 import framevpm.analyze.approaches.naturalness.OtherFilesNaturalness;
@@ -8,7 +10,6 @@ import framevpm.analyze.approaches.naturalness.PreviousVersionNaturalness;
 import framevpm.analyze.approaches.naturalness.setup.NaturalnessSetup;
 import framevpm.analyze.approaches.naturalness.setup.SetupSet;
 import framevpm.analyze.model.ProjectAnalysis;
-import framevpm.organize.Organize;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -83,18 +84,18 @@ public class Application {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         long time = System.currentTimeMillis();
-        ResourcesPathExtended path = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/");
-        System.out.println("Start Linux");
-        Application application = new Application(path, CProjects.LINUX_KERNEL.getName());
-        application.runAll();
-        System.out.println("End Linux : " + (System.currentTimeMillis() - time));
-        time = System.currentTimeMillis();
+        ResourcesPathExtended path = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/vpm/");
+        /**System.out.println("Start Linux");
+         Application application = new Application(path, CProjects.LINUX_KERNEL.getName());
+         application.runAll();
+         System.out.println("End Linux : " + (System.currentTimeMillis() - time));
+         time = System.currentTimeMillis();*/
         System.out.println("Start SystemD");
-        application = new Application(path, CProjects.SYSTEMD.getName());
+        Application application = new Application(path, CProjects.SYSTEMD.getName());
         application.runAll();
         System.out.println("End SystemD : " + (System.currentTimeMillis() - time));
         time = System.currentTimeMillis();
-        System.out.println("Start Wireshark");
+        /**System.out.println("Start Wireshark");
         application = new Application(path, CProjects.WIRESHARK.getName());
         application.runAll();
         System.out.println("End Wireshark : " + (System.currentTimeMillis() - time));
@@ -102,6 +103,9 @@ public class Application {
         System.out.println("Start SSL");
         application = new Application(path, CProjects.OPEN_SSL.getName());
         application.runAll();
-        System.out.println("End SSL : " + (System.currentTimeMillis() - time));
+        System.out.println("End SSL : " + (System.currentTimeMillis() - time));*/
+        /**ExporterExtended exporterExtended = new ExporterExtended(path);
+        ProjectAnalysis projectAnalysis = exporterExtended.loadProjectAnalysis(CProjects.SYSTEMD.getName());
+        int i = 0;*/
     }
 }

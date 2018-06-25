@@ -27,7 +27,7 @@ public class BugCollector {
     private final ExporterExtended exporterExtended;
 
 
-    public BugCollector(ResourcesPathExtended resourcesPathExtended) throws IOException, ClassNotFoundException {
+    public BugCollector(ResourcesPathExtended resourcesPathExtended) {
         this.resourcesPathExtended = resourcesPathExtended;
         this.exporterExtended = new ExporterExtended(resourcesPathExtended);
     }
@@ -38,7 +38,7 @@ public class BugCollector {
             throw new RuntimeException("invalid Project");
         }
         Project project = datasetOfVuln.getProject();
-        GitActions git = new GitActions(datasetOfVuln.getProject().getOnlineRepository(), resourcesPathExtended.getGitPath() + project);
+        GitActions git = new GitActions(resourcesPathExtended.getGitPath() + projectName);
 
 
         BugDataset dataset = exporterExtended.loadBugDataset(project.getName());
@@ -49,12 +49,12 @@ public class BugCollector {
                 case 0:
                     BugRegExpDataset datasetR = new BugRegExpDataset(project);
                     datasetR.updateDataset(commits, git);
-                    git.close();
+                    exporterExtended.saveBugDataset(datasetR);
                     return datasetR;
                 default:
                     BugIdDataset datasetI = new BugIdDataset(project);
                     datasetI.updateDataset(datasetOfVuln.getBugToHash(), datasetOfVuln.getBugToCve(), git);
-                    git.close();
+                    exporterExtended.saveBugDataset(datasetI);
                     return datasetI;
             }
         } else {
@@ -67,7 +67,6 @@ public class BugCollector {
                     break;
             }
             exporterExtended.saveBugDataset(dataset);
-            git.close();
             return dataset;
         }
 

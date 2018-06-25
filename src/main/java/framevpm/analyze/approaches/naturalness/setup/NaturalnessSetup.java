@@ -35,7 +35,7 @@ public class NaturalnessSetup {
     @Override
     public String toString() {
         return "{" +
-                "tokenizer=" + tokenizer.toString() +
+                "tokenizer=" + tokenizer.getType() +
                 ", n=" + n +
                 ", threshold=" + threshold +
                 ", smoother=" + smoother.getAbbr() +

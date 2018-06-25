@@ -28,8 +28,6 @@ import static framevpm.analyze.Resources.FORBIDDEN;
 @SuppressWarnings("Duplicates")
 public abstract class Analyze {
 
-    protected final ApproachAnalysis approachAnalysis;
-
     protected final String project;
     //protected final GitActions git;
     protected final Collection<String> releases;
@@ -63,7 +61,6 @@ public abstract class Analyze {
             projectAnalysis = new ProjectAnalysis(project);
             exporter.saveProjectAnalysis(projectAnalysis);
         }
-        approachAnalysis = projectAnalysis.getOrCreateApproachAnalysis(getApproachName());
     }
 
     private void downloadAllVersionFor(String project) {
@@ -77,9 +74,6 @@ public abstract class Analyze {
     }
 
     protected Map<String, String> loadVersion(String version) {
-        if (version.startsWith("v")) {
-            version = version.substring(1);
-        }
         Map<String, String> fileMap = new HashMap<>();
         try {
             TarArchiveInputStream tar = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(releasePath + version + ".tar.gz")));

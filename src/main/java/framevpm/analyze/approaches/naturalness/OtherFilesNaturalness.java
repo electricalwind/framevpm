@@ -4,6 +4,7 @@ import data7.Resources;
 import framevpm.ResourcesPathExtended;
 import framevpm.analyze.Analyze;
 import framevpm.analyze.approaches.naturalness.setup.NaturalnessSetup;
+import framevpm.analyze.model.ApproachAnalysis;
 import framevpm.analyze.model.FileAnalysis;
 import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.analyze.model.ReleaseAnalysis;
@@ -24,10 +25,12 @@ import java.util.stream.Collectors;
 public class OtherFilesNaturalness extends Analyze {
     private final static String NAME = "Other Files Naturalness";
     private final NaturalnessSetup setup;
+    private final ApproachAnalysis approachAnalysis;
 
     public OtherFilesNaturalness(ResourcesPathExtended pathExtended, String project, NaturalnessSetup setup) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
         this.setup = setup;
+        approachAnalysis = projectAnalysis.getOrCreateApproachAnalysis(getApproachName());
     }
 
     @Override

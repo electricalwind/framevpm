@@ -16,8 +16,11 @@ import java.util.concurrent.*;
 public abstract class PerFileAnalysis extends Analyze {
 
 
+    private final ApproachAnalysis approachAnalysis;
+
     public PerFileAnalysis(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
+        approachAnalysis = projectAnalysis.getOrCreateApproachAnalysis(getApproachName());
     }
 
     @Override
