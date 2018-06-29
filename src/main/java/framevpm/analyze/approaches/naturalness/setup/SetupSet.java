@@ -10,10 +10,10 @@ import java.util.List;
 
 public class SetupSet {
 
-    private static final int[] selectedn = new int[]{3,5,8};
+    private static final int[] selectedn = new int[]{3,6};
     private static final NgramSmoother smoother = SmootherFactory.create("mkn");
     private static final AbstractFileTokenizer[] fileTokenizers = new AbstractFileTokenizer[]{CPPFileTokenizerFactory.createUTFTokenizer(),CPPFileTokenizerFactory.createLemmeTokenizer(),CPPFileTokenizerFactory.createASTTokenizer()};
-    private static final int[] thresholds = new int[]{1,8};
+    private static final int[] thresholds = new int[]{1,4};
     private static final SetupSet INSTANCE = new SetupSet();
 
     private final List<NaturalnessSetup> setups
@@ -28,7 +28,6 @@ public class SetupSet {
                 }
             }
         }
-
     }
 
     public static SetupSet instance() {

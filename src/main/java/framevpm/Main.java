@@ -4,6 +4,7 @@ import data7.Importer;
 import data7.project.CProjects;
 import data7.project.Project;
 import framevpm.analyze.Application;
+import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.bugcollector.BugCollector;
 import framevpm.organize.Organize;
 
@@ -17,9 +18,14 @@ public class Main {
         for (Project project : projects) {
             try {
                 new Importer(pathExtended).updateOrCreateDatasetFor(project);
+                System.gc();
                 new BugCollector(pathExtended).updateOrCreateBugDataset(project.getName());
+                System.gc();
                 new Organize(pathExtended, project.getName()).balance(true);
+                System.gc();
                 new Application(pathExtended, project.getName()).runAll();
+                System.gc();
+
             } catch (ParseException | IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

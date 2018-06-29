@@ -4,6 +4,7 @@ import framevpm.analyze.model.Analysis;
 import framevpm.analyze.model.FileAnalysis;
 import framevpm.analyze.model.FixAnalysis;
 import framevpm.organize.model.FileData;
+import framevpm.organize.model.FileType;
 import framevpm.organize.model.FixData;
 import modelling.NgramModel;
 import tokenizer.file.AbstractFileTokenizer;
@@ -19,6 +20,7 @@ public class NaturalnessComputation {
     public static FileAnalysis computeNaturalness(FileData data, NgramModel model, String file, Iterable<String> tokenizedFile, AbstractFileTokenizer tokenizer) {
         FileAnalysis fileAnalysis = new FileAnalysis(file);
         if (data != null) {
+            fileAnalysis.setType(data.getTypeFile());
             for (FixData fixData : data.getFixes()) {
                 Iterable<String> bf = null;
                 Iterable<String> af = null;
@@ -38,6 +40,8 @@ public class NaturalnessComputation {
                     fileAnalysis.getFixes().add(fixAnalysis);
                 }
             }
+        }else {
+            fileAnalysis.setType(FileType.Clear);
         }
         Analysis analysis = naturalnessOf(tokenizedFile, model);
         fileAnalysis.setOriginal(analysis);
