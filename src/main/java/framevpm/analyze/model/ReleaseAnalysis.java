@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReleaseAnalysis implements Serializable {
-    private static final long serialVersionUID = 20180613L;
+    private static final long serialVersionUID = 20180703L;
     private final String release;
     private final Map<String, FileAnalysis> fileAnalysisMap;
 

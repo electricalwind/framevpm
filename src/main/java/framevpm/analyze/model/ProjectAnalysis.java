@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectAnalysis implements Serializable {
-    private static final long serialVersionUID = 20180613L;
+    private static final long serialVersionUID = 20180703L;
     private final String project;
 
-    private final Map<String, ApproachAnalysis> mapOfApproachAnalysis;
+    private final Map<String, ReleaseAnalysis> mapOfReleaseAnalysis;
 
     public ProjectAnalysis(String project) {
         this.project = project;
-        mapOfApproachAnalysis = new HashMap<>();
+        mapOfReleaseAnalysis = new HashMap<>();
     }
 
     public String getProject() {
@@ -20,15 +20,13 @@ public class ProjectAnalysis implements Serializable {
     }
 
 
-    public ApproachAnalysis getOrCreateApproachAnalysis(String approach) {
-        if (mapOfApproachAnalysis.containsKey(approach)) {
-            return mapOfApproachAnalysis.get(approach);
+    public ReleaseAnalysis getOrCreateReleaseAnalysis(String release) {
+        if (mapOfReleaseAnalysis.containsKey(release)) {
+            return mapOfReleaseAnalysis.get(release);
         } else {
-            ApproachAnalysis approachAnalysis = new ApproachAnalysis(approach);
-            mapOfApproachAnalysis.put(approach, approachAnalysis);
+            ReleaseAnalysis approachAnalysis = new ReleaseAnalysis(release);
+            mapOfReleaseAnalysis.put(release, approachAnalysis);
             return approachAnalysis;
         }
     }
-
-
 }

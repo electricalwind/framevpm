@@ -171,8 +171,8 @@ public class Result implements Serializable {
     /**
      * Method computing the Matthews correlation coefficient,
      * i.e., correlation coefficient between the observed and predicted binary classifications;
-     * it returns a value between −1 and +1. A coefficient of +1 represents a perfect prediction,
-     * 0 no better than random prediction and −1 indicates total disagreement between prediction and observation
+     * it returns a value between ?1 and +1. A coefficient of +1 represents a perfect prediction,
+     * 0 no better than random prediction and ?1 indicates total disagreement between prediction and observation
      */
     double mcc(int classIndex) {
         double tn = tn(classIndex);

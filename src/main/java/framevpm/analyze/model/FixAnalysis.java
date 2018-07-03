@@ -3,18 +3,23 @@ package framevpm.analyze.model;
 import framevpm.organize.model.FileType;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FixAnalysis implements Serializable {
-    private static final long serialVersionUID = 20180613L;
+    private static final long serialVersionUID = 20180703L;
     private final FileType type;
-    private final Analysis before;
-    private final Analysis after;
+    private final Map<String,Analysis> before;
+    private final Map<String,Analysis> after;
     private String cwe;
+    private String cvss;
 
-    public FixAnalysis(FileType type, Analysis before, Analysis after) {
+    public FixAnalysis(FileType type) {
         this.type = type;
-        this.before = before;
-        this.after = after;
+        this.before = new HashMap<>();
+        this.after = new HashMap<>();
+        cvss = null;
+        cwe = null;
     }
 
     public void setCwe(String cwe) {
@@ -25,15 +30,23 @@ public class FixAnalysis implements Serializable {
         return type;
     }
 
-    public Analysis getBefore() {
+    public Map<String, Analysis> getBefore() {
         return before;
     }
 
-    public Analysis getAfter() {
+    public Map<String, Analysis> getAfter() {
         return after;
     }
 
     public String getCwe() {
         return cwe;
+    }
+
+    public String getCvss() {
+        return cvss;
+    }
+
+    public void setCvss(String cvss) {
+        this.cvss = cvss;
     }
 }

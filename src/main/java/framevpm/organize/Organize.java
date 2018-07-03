@@ -64,9 +64,9 @@ public class Organize {
             Set<String> versions = vuln.getVersions();
             Map<String, Commit> commits = vuln.getPatchingCommits();
             if (commits.size() == 1) {
-                count += handleSingleCommit(commits, vuln.getCwe(), versions);
+                count += handleSingleCommit(commits, vuln.getCwe(), versions,vuln.getScore());
             } else if (commits.size() > 1) {
-                count += handleDouble(commits, vuln.getCwe(), versions);
+                count += handleDouble(commits, vuln.getCwe(), versions,vuln.getScore());
             }
         }
         projectData.setVulndone(true);
@@ -142,7 +142,7 @@ public class Organize {
         System.out.println("number of Unique Buggy File: " + count2);
     }
 
-    private int handleSingleCommit(Map<String, Commit> commits, String cwe, Set<String> versions) {
+    private int handleSingleCommit(Map<String, Commit> commits, String cwe, Set<String> versions,String cvss) {
         final int[] count = {0};
 
         Commit commit = new ArrayList<>(commits.values()).get(0);
@@ -172,6 +172,7 @@ public class Organize {
                     String before = fileFix.getFileBefore().getFileContent();
                     FixData fix = new FixData(FileType.Vulnerability, fileFix.getOldHash(), commit.getHash(), before, after);
                     fix.setCwe(cwe);
+                    fix.setCvss(cvss);
                     fileData.getFixes().add(fix);
                 });
             }
@@ -179,7 +180,7 @@ public class Organize {
         return count[0];
     }
 
-    private int handleDouble(Map<String, Commit> commits, String cwe, Set<String> versions) {
+    private int handleDouble(Map<String, Commit> commits, String cwe, Set<String> versions, String cvss) {
         final int[] count = {0};
         TreeMap<Long, Commit> order = new TreeMap<>();
         commits.values().forEach((commit) -> {
@@ -241,6 +242,7 @@ public class Organize {
                             count[0]++;
                             FixData fix = new FixData(FileType.Vulnerability, fileFix.getOldHash(), commit.getHash(), before[0], after);
                             fix.setCwe(cwe);
+                            fix.setCvss(cvss);
                             fileData.getFixes().add(fix);
                         }
                     });

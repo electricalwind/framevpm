@@ -4,7 +4,6 @@ import data7.Importer;
 import data7.project.CProjects;
 import data7.project.Project;
 import framevpm.analyze.Application;
-import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.bugcollector.BugCollector;
 import framevpm.organize.Organize;
 

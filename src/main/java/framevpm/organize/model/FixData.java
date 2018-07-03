@@ -6,21 +6,23 @@ import java.io.Serializable;
  *
  */
 public class FixData implements Serializable {
-    private static final long serialVersionUID = 20180611L;
+    private static final long serialVersionUID = 20180703L;
     private final FileType typeFile;
     private String cwe;
+    private String cvss;
     private final String hashBefore;
     private final String hashAfter;
     private final String before;
     private final String after;
 
-    public FixData(FileType typeFile,String hashBefore, String hashAfter, String before, String after) {
+    public FixData(FileType typeFile, String hashBefore, String hashAfter, String before, String after) {
         this.typeFile = typeFile;
         this.hashBefore = hashBefore;
         this.hashAfter = hashAfter;
         this.before = before;
         this.after = after;
         this.cwe = null;
+        this.cvss = null;
     }
 
 
@@ -50,5 +52,12 @@ public class FixData implements Serializable {
 
     public void setCwe(String cwe) {
         this.cwe = cwe;
+    }
+
+    public String getCvss() {
+        return cvss;
+    }
+    public void setCvss(String cvss) {
+        this.cvss = cvss;
     }
 }

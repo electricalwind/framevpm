@@ -16,11 +16,8 @@ import java.util.concurrent.*;
 public abstract class PerFileAnalysis extends Analyze {
 
 
-    private final ApproachAnalysis approachAnalysis;
-
     public PerFileAnalysis(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
-        approachAnalysis = projectAnalysis.getOrCreateApproachAnalysis(getApproachName());
     }
 
     @Override
@@ -34,7 +31,7 @@ public abstract class PerFileAnalysis extends Analyze {
                 if (releaseData.getFileMap().size() != 0) {
                     System.out.println("Starting: " + release);
                     Map<String, String> files = loadVersion(release);
-                    ReleaseAnalysis releaseAnalysis = approachAnalysis.getOrCreateReleaseAnalysis(release);
+                    ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
                     if (releaseAnalysis.getFileAnalysisMap().size() == 0) {
                         int count = 0;
                         for (Map.Entry<String, String> fileEntry : files.entrySet()) {
@@ -43,20 +40,26 @@ public abstract class PerFileAnalysis extends Analyze {
                             count++;
                         }
                         int received = 0;
+                        int error = 0;
                         while (received < count) {
                             Future<FileAnalysis> fut = completionService.take();
                             try {
-                                FileAnalysis result = fut.get();
+                                FileAnalysis result = fut.get(60, TimeUnit.SECONDS);
                                 if (result != null) {
                                     releaseAnalysis.getFileAnalysisMap().put(result.getFile(), result);
                                 }
                             } catch (ExecutionException e) {
                                 e.printStackTrace();
+                                error++;
+                            } catch (TimeoutException e) {
+                                fut.cancel(true);
+                                error++;
                             } finally {
                                 received++;
                                 System.out.println(received + "/" + count);
                             }
                         }
+                        System.out.println("error: " + error);
                         System.out.println("done rel: " + release);
                         exporter.saveProjectAnalysis(projectAnalysis);
                     }
@@ -70,6 +73,7 @@ public abstract class PerFileAnalysis extends Analyze {
     }
 
     public Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, String> fileToAnalyze, String release) {
+        String approach  = getApproachName();
         return () -> {
             String file = fileToAnalyze.getKey();
             FileAnalysis fa = new FileAnalysis(file);
@@ -79,7 +83,12 @@ public abstract class PerFileAnalysis extends Analyze {
                 for (FixData fixExp : fileData.getFixes()) {
                     Analysis bef = analyseFile(file, fixExp.getBefore(), fixExp.getHashBefore());
                     Analysis af = analyseFile(file, fixExp.getAfter(), fixExp.getHashAfter());
-                    FixAnalysis fixAnalysis = new FixAnalysis(fixExp.getTypeFile(), bef, af);
+                    FixAnalysis fixAnalysis = new FixAnalysis(fixExp.getTypeFile());
+                    fixAnalysis.getBefore().put(approach,bef);
+                    fixAnalysis.getAfter().put(approach,af);
+                    if (fixExp.getCvss() !=null) {
+                        fixAnalysis.setCvss(fixExp.getCvss());
+                    }
                     if (fixExp.getCwe() != null) {
                         fixAnalysis.setCwe(fixExp.getCwe());
                     }
@@ -88,7 +97,7 @@ public abstract class PerFileAnalysis extends Analyze {
             } else {
                 fa.setType(FileType.Clear);
             }
-            fa.setOriginal(analyseFile(file, fileToAnalyze.getValue(), release));
+            fa.getOriginal().put(approach,analyseFile(file, fileToAnalyze.getValue(), release));
             return fa;
         };
     }

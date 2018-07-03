@@ -91,5 +91,8 @@ public class Application {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         long time = System.currentTimeMillis();
         ResourcesPathExtended path = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/vpm/");
+        Application application = new Application(path,"systemd");
+        application.runAll();
+        int k =0;
     }
 }

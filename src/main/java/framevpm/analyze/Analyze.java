@@ -1,16 +1,15 @@
 package framevpm.analyze;
 
-import data7.Exporter;
+
 import data7.Utils;
-import data7.project.CProjects;
-import data7.project.ProjectFactory;
+
 import framevpm.ExporterExtended;
 import framevpm.ResourcesPathExtended;
-import framevpm.analyze.model.ApproachAnalysis;
+
 import framevpm.analyze.model.ProjectAnalysis;
 import framevpm.organize.model.ProjectData;
 import framevpm.project.ProjectInfoFactory;
-import gitUtilitaries.GitActions;
+
 import miscUtils.Misc;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;

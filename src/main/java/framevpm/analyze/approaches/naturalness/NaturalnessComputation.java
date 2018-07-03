@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class NaturalnessComputation {
 
-    public static FileAnalysis computeNaturalness(FileData data, NgramModel model, String file, Iterable<String> tokenizedFile, AbstractFileTokenizer tokenizer) {
+    public static FileAnalysis computeNaturalness(FileData data, NgramModel model, String file, Iterable<String> tokenizedFile, AbstractFileTokenizer tokenizer, String approach) {
         FileAnalysis fileAnalysis = new FileAnalysis(file);
         if (data != null) {
             fileAnalysis.setType(data.getTypeFile());
@@ -33,18 +33,23 @@ public class NaturalnessComputation {
                 if (af != null && bf != null) {
                     Analysis bef = naturalnessOf(bf, model);
                     Analysis aft = naturalnessOf(bf, model);
-                    FixAnalysis fixAnalysis = new FixAnalysis(fixData.getTypeFile(), bef, aft);
+                    FixAnalysis fixAnalysis = new FixAnalysis(fixData.getTypeFile());
+                    fixAnalysis.getBefore().put(approach, bef);
+                    fixAnalysis.getAfter().put(approach, aft);
+                    if (fixData.getCvss() != null) {
+                        fixAnalysis.setCvss(fixData.getCvss());
+                    }
                     if (fixData.getCwe() != null) {
                         fixAnalysis.setCwe(fixData.getCwe());
                     }
                     fileAnalysis.getFixes().add(fixAnalysis);
                 }
             }
-        }else {
+        } else {
             fileAnalysis.setType(FileType.Clear);
         }
         Analysis analysis = naturalnessOf(tokenizedFile, model);
-        fileAnalysis.setOriginal(analysis);
+        fileAnalysis.getOriginal().put(approach, analysis);
         return fileAnalysis;
     }
 

@@ -1,17 +1,20 @@
 package framevpm;
 
+
 import data7.Exporter;
-import framevpm.analyze.model.ProjectAnalysis;
+import framevpm.analyze.model.*;
 import framevpm.bugcollector.model.BugDataset;
 import framevpm.organize.model.ProjectData;
 
 import java.io.*;
+
 
 import static data7.Utils.checkFolderDestination;
 
 public class ExporterExtended extends Exporter {
 
     private final ResourcesPathExtended resourcesPathExtended;
+
 
     public ExporterExtended(ResourcesPathExtended resourcesPathExtended) {
         super(resourcesPathExtended);
@@ -20,7 +23,7 @@ public class ExporterExtended extends Exporter {
 
     public void saveBugDataset(BugDataset dataset) throws IOException {
         checkFolderDestination(resourcesPathExtended.getBugDatasetPath());
-        FileOutputStream fos = new FileOutputStream(resourcesPathExtended.getBugDatasetPath() + dataset.getProject().getName() + "-bugdataset.obj", false);
+        FileOutputStream fos = new FileOutputStream(new RandomAccessFile(resourcesPathExtended.getBugDatasetPath() + dataset.getProject().getName() + "-bugdataset.obj", "rw").getFD());
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(dataset);
         oos.close();
@@ -41,7 +44,7 @@ public class ExporterExtended extends Exporter {
 
     public void saveProjectData(ProjectData dataset) throws IOException {
         checkFolderDestination(resourcesPathExtended.getOrganizeData());
-        FileOutputStream fos = new FileOutputStream(resourcesPathExtended.getOrganizeData() + dataset.getProject() + "-organizedData.obj", false);
+        FileOutputStream fos = new FileOutputStream(new RandomAccessFile(resourcesPathExtended.getOrganizeData() + dataset.getProject() + "-organizedData.obj", "rw").getFD());
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(dataset);
         oos.close();
@@ -62,10 +65,11 @@ public class ExporterExtended extends Exporter {
 
     public void saveProjectAnalysis(ProjectAnalysis dataset) throws IOException {
         checkFolderDestination(resourcesPathExtended.getAnalysisPath());
-        FileOutputStream fos = new FileOutputStream(resourcesPathExtended.getAnalysisPath() + dataset.getProject() + "-analyzedData.obj", false);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(dataset);
-        oos.close();
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getAnalysisPath() + dataset.getProject() + "-analyzedData.obj", "rw");
+        FileOutputStream fos = new FileOutputStream(raf.getFD());
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        out.writeObject(dataset);
+        out.flush();
         fos.close();
     }
 
