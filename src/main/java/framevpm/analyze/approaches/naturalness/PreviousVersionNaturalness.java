@@ -27,11 +27,10 @@ public class PreviousVersionNaturalness extends Analyze {
     private final NaturalnessSetup setup;
 
 
-
     public PreviousVersionNaturalness(ResourcesPathExtended pathExtended, String project, NaturalnessSetup setup) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
         this.setup = setup;
-        }
+    }
 
     @Override
     public ProjectAnalysis processFeatures() throws IOException {
@@ -52,10 +51,11 @@ public class PreviousVersionNaturalness extends Analyze {
                         ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
                         NgramModel model = new NgramModelKylmImpl(setup.getN(), setup.getSmoother(), setup.getThreshold());
                         model.train(tokenizedPreviousRelease);
-                        if (releaseAnalysis.getFileAnalysisMap().size() == 0) {
+                        if (releaseAnalysis.addApproache(getApproachName())) {
                             int count = 0;
                             for (Map.Entry<String, Iterable<String>> fileEntry : tokenizedFiles.entrySet()) {
-                                completionService.submit(handleFile(releaseData, fileEntry, model));
+                                FileAnalysis fa = releaseAnalysis.getOrCreateFileAnalysis(fileEntry.getKey());
+                                completionService.submit(handleFile(releaseData, fileEntry, model, fa));
                                 count++;
                             }
                             int received = 0;
@@ -93,10 +93,10 @@ public class PreviousVersionNaturalness extends Analyze {
         return projectAnalysis;
     }
 
-    private Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, Iterable<String>> fileEntry, NgramModel model) {
+    private Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, Iterable<String>> fileEntry, NgramModel model, FileAnalysis fa) {
         return () -> {
             FileData data = releaseData.getFile(fileEntry.getKey());
-            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getKey(), fileEntry.getValue(), setup.getTokenizer(),getApproachName());
+            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getKey(), fileEntry.getValue(), setup.getTokenizer(), getApproachName(), fa);
         };
     }
 

@@ -32,11 +32,11 @@ public abstract class PerFileAnalysis extends Analyze {
                     System.out.println("Starting: " + release);
                     Map<String, String> files = loadVersion(release);
                     ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
-                    if (releaseAnalysis.getFileAnalysisMap().size() == 0) {
+                    if (releaseAnalysis.addApproache(getApproachName())) {
                         int count = 0;
                         for (Map.Entry<String, String> fileEntry : files.entrySet()) {
-
-                            completionService.submit(handleFile(releaseData, fileEntry, release));
+                            FileAnalysis fa = releaseAnalysis.getOrCreateFileAnalysis(fileEntry.getKey());
+                            completionService.submit(handleFile(releaseData, fileEntry, release, fa));
                             count++;
                         }
                         int received = 0;
@@ -72,11 +72,10 @@ public abstract class PerFileAnalysis extends Analyze {
         return projectAnalysis;
     }
 
-    public Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, String> fileToAnalyze, String release) {
-        String approach  = getApproachName();
+    public Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, String> fileToAnalyze, String release, FileAnalysis fa) {
+        String approach = getApproachName();
         return () -> {
             String file = fileToAnalyze.getKey();
-            FileAnalysis fa = new FileAnalysis(file);
             FileData fileData = releaseData.getFile(file);
             if (fileData != null) {
                 fa.setType(fileData.getTypeFile());
@@ -84,9 +83,9 @@ public abstract class PerFileAnalysis extends Analyze {
                     Analysis bef = analyseFile(file, fixExp.getBefore(), fixExp.getHashBefore());
                     Analysis af = analyseFile(file, fixExp.getAfter(), fixExp.getHashAfter());
                     FixAnalysis fixAnalysis = new FixAnalysis(fixExp.getTypeFile());
-                    fixAnalysis.getBefore().put(approach,bef);
-                    fixAnalysis.getAfter().put(approach,af);
-                    if (fixExp.getCvss() !=null) {
+                    fixAnalysis.getBefore().put(approach, bef);
+                    fixAnalysis.getAfter().put(approach, af);
+                    if (fixExp.getCvss() != null) {
                         fixAnalysis.setCvss(fixExp.getCvss());
                     }
                     if (fixExp.getCwe() != null) {
@@ -97,7 +96,7 @@ public abstract class PerFileAnalysis extends Analyze {
             } else {
                 fa.setType(FileType.Clear);
             }
-            fa.getOriginal().put(approach,analyseFile(file, fileToAnalyze.getValue(), release));
+            fa.getOriginal().put(approach, analyseFile(file, fileToAnalyze.getValue(), release));
             return fa;
         };
     }

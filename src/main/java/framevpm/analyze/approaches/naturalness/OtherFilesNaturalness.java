@@ -47,10 +47,11 @@ public class OtherFilesNaturalness extends Analyze {
                     }
                     System.out.println("Starting: " + release);
                     ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
-                    if (releaseAnalysis.getFileAnalysisMap().size() == 0) {
+                    if (releaseAnalysis.addApproache(getApproachName())) {
                         int count = 0;
                         for (Map.Entry<String, Iterable<String>> fileEntry : tokenizedFiles.entrySet()) {
-                            completionService.submit(handleFile(releaseData, fileEntry, tokenizedFiles));
+                            FileAnalysis fa = releaseAnalysis.getOrCreateFileAnalysis(fileEntry.getKey());
+                            completionService.submit(handleFile(releaseData, fileEntry, tokenizedFiles,fa));
                             count++;
                         }
                         int received = 0;
@@ -86,13 +87,13 @@ public class OtherFilesNaturalness extends Analyze {
         return projectAnalysis;
     }
 
-    private Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, Iterable<String>> fileEntry, Map<String, Iterable<String>> tokenizedFiles) {
+    private Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, Iterable<String>> fileEntry, Map<String, Iterable<String>> tokenizedFiles, FileAnalysis fa) {
         return () -> {
             List<Iterable<String>> training = tokenizedFiles.entrySet().stream().filter(stringIterableEntry -> !stringIterableEntry.getKey().equals(fileEntry.getKey())).map(Map.Entry::getValue).collect(Collectors.toList());
             NgramModel model = new NgramModelKylmImpl(setup.getN(), setup.getSmoother(), setup.getThreshold());
             model.train(training);
             FileData data = releaseData.getFile(fileEntry.getKey());
-            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getKey(), fileEntry.getValue(), setup.getTokenizer(),getApproachName());
+            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getKey(), fileEntry.getValue(), setup.getTokenizer(),getApproachName(),fa);
         };
     }
 
