@@ -1,15 +1,12 @@
 package framevpm.analyze;
 
-import data7.Exporter;
-import data7.project.CProjects;
-import framevpm.ExporterExtended;
 import framevpm.ResourcesPathExtended;
 import framevpm.analyze.approaches.filebyfile.*;
 import framevpm.analyze.approaches.naturalness.OtherFilesNaturalness;
 import framevpm.analyze.approaches.naturalness.PreviousVersionNaturalness;
 import framevpm.analyze.approaches.naturalness.setup.NaturalnessSetup;
 import framevpm.analyze.approaches.naturalness.setup.SetupSet;
-import framevpm.analyze.model.ProjectAnalysis;
+import framevpm.analyze.model.ProjectReleaseAnalysed;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -24,7 +21,7 @@ public class Application {
         this.project = project;
     }
 
-    public ProjectAnalysis runAll() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runAll() throws IOException, ClassNotFoundException {
         runSimpleMetrics();
         System.gc();
         runComplexity();
@@ -38,50 +35,51 @@ public class Application {
         runBagOfWords();
         System.gc();
         runPreviousReleaseNaturalness();
+        System.gc();
         return runOtherFilesNaturalness();
     }
 
 
-    public ProjectAnalysis runCodeChurnDeveloper() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runCodeChurnDeveloper() throws IOException, ClassNotFoundException {
         return new CodeChurnDeveloperMetrics(pathExtended, project).processFeatures();
     }
 
-    public ProjectAnalysis runComplexity() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runComplexity() throws IOException, ClassNotFoundException {
         return new ComplexityMetrics(pathExtended, project).processFeatures();
     }
 
-    public ProjectAnalysis runSimpleMetrics() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runSimpleMetrics() throws IOException, ClassNotFoundException {
         return new SimpleCodeMetrics(pathExtended, project).processFeatures();
     }
 
-    public ProjectAnalysis runIncludes() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runIncludes() throws IOException, ClassNotFoundException {
         return new FileIncludes(pathExtended, project).processFeatures();
     }
 
-    public ProjectAnalysis runFunctionsCalls() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runFunctionsCalls() throws IOException, ClassNotFoundException {
         return new FileFunctionCalls(pathExtended, project).processFeatures();
     }
 
-    public ProjectAnalysis runBagOfWords() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runBagOfWords() throws IOException, ClassNotFoundException {
         return new FileBagOfWords(pathExtended, project).processFeatures();
     }
 
 
-    public ProjectAnalysis runPreviousReleaseNaturalness() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runPreviousReleaseNaturalness() throws IOException, ClassNotFoundException {
         Iterator<NaturalnessSetup> setups = SetupSet.instance().setups().iterator();
-        ProjectAnalysis pa = null;
+        ProjectReleaseAnalysed pa = null;
         while (setups.hasNext()) {
             pa = new PreviousVersionNaturalness(pathExtended, project, setups.next()).processFeatures();
         }
         return pa;
     }
 
-    public ProjectAnalysis runOtherFilesNaturalness() throws IOException, ClassNotFoundException {
+    public ProjectReleaseAnalysed runOtherFilesNaturalness() throws IOException, ClassNotFoundException {
         Iterator<NaturalnessSetup> setups = SetupSet.instance().setups().iterator();
-        ProjectAnalysis pa = null;
+        ProjectReleaseAnalysed pa = null;
         while (setups.hasNext()) {
             NaturalnessSetup setup = setups.next();
-            if (setup.getThreshold() == 1  || setup.getN() == 3) {
+            if (setup.getThreshold() == 1 && setup.getN() == 3) {
                 pa = new OtherFilesNaturalness(pathExtended, project, setup).processFeatures();
             }
         }
@@ -91,8 +89,8 @@ public class Application {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         long time = System.currentTimeMillis();
         ResourcesPathExtended path = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/vpm/");
-        Application application = new Application(path,"systemd");
+        Application application = new Application(path, "systemd");
         application.runAll();
-        int k =0;
+        int k = 0;
     }
 }

@@ -6,7 +6,7 @@ import data7.Utils;
 import framevpm.ExporterExtended;
 import framevpm.ResourcesPathExtended;
 
-import framevpm.analyze.model.ProjectAnalysis;
+import framevpm.analyze.model.ProjectReleaseAnalysed;
 import framevpm.organize.model.ProjectData;
 import framevpm.project.ProjectInfoFactory;
 
@@ -33,7 +33,7 @@ public abstract class Analyze {
     protected final ExporterExtended exporter;
     protected final ProjectData projectData;
     protected final ResourcesPathExtended path;
-    protected ProjectAnalysis projectAnalysis;
+    protected ProjectReleaseAnalysed projectAnalysis;
     protected String releasePath;
 
     public Analyze(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
@@ -55,10 +55,10 @@ public abstract class Analyze {
         if (new File(releasePath).list().length != releases.size()) {
             downloadAllVersionFor(project);
         }
-        this.projectAnalysis = exporter.loadProjectAnalysis(project);
+        this.projectAnalysis = exporter.loadProjectReleaseAnalysis(project);
         if (projectAnalysis == null) {
-            projectAnalysis = new ProjectAnalysis(project);
-            exporter.saveProjectAnalysis(projectAnalysis);
+            projectAnalysis = new ProjectReleaseAnalysed(project);
+            exporter.saveProjectReleaseAnalysis(projectAnalysis);
         }
     }
 
@@ -101,7 +101,7 @@ public abstract class Analyze {
         return fileMap;
     }
 
-    public abstract ProjectAnalysis processFeatures() throws IOException;
+    public abstract ProjectReleaseAnalysed processFeatures() throws IOException;
 
     public abstract String getApproachName();
 

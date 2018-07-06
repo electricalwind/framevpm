@@ -6,6 +6,7 @@ import framevpm.analyze.Analyze;
 import framevpm.analyze.approaches.naturalness.setup.NaturalnessSetup;
 import framevpm.analyze.model.FileAnalysis;
 import framevpm.analyze.model.ProjectAnalysis;
+import framevpm.analyze.model.ProjectReleaseAnalysed;
 import framevpm.analyze.model.ReleaseAnalysis;
 import framevpm.organize.model.FileData;
 import framevpm.organize.model.ReleaseData;
@@ -32,7 +33,7 @@ public class OtherFilesNaturalness extends Analyze {
     }
 
     @Override
-    public ProjectAnalysis processFeatures() throws IOException {
+    public ProjectReleaseAnalysed processFeatures() throws IOException {
         ExecutorService executor = Executors.newFixedThreadPool(Resources.NB_THREADS);
         CompletionService<FileAnalysis> completionService = new ExecutorCompletionService(executor);
         System.out.println("Starting: " + getApproachName());
@@ -46,12 +47,15 @@ public class OtherFilesNaturalness extends Analyze {
                         tokenizedFiles.put(fileEntry.getKey(), setup.getTokenizer().tokenize(fileEntry.getValue()));
                     }
                     System.out.println("Starting: " + release);
-                    ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
+                    ReleaseAnalysis releaseAnalysis = exporter.loadReleaseAnalysis(project, release);
+                    if (releaseAnalysis == null) {
+                        releaseAnalysis = new ReleaseAnalysis(release);//projectAnalysis.getOrCreateReleaseAnalysis(release);
+                    }
                     if (releaseAnalysis.addApproache(getApproachName())) {
                         int count = 0;
                         for (Map.Entry<String, Iterable<String>> fileEntry : tokenizedFiles.entrySet()) {
                             FileAnalysis fa = releaseAnalysis.getOrCreateFileAnalysis(fileEntry.getKey());
-                            completionService.submit(handleFile(releaseData, fileEntry, tokenizedFiles,fa));
+                            completionService.submit(handleFile(releaseData, fileEntry, tokenizedFiles, fa));
                             count++;
                         }
                         int received = 0;
@@ -76,15 +80,18 @@ public class OtherFilesNaturalness extends Analyze {
                         }
                         System.out.println("error: " + error);
                         System.out.println("done rel: " + release);
-                        exporter.saveProjectAnalysis(projectAnalysis);
+                        exporter.saveReleaseAnalysis(releaseAnalysis, project);
+                        projectAnalysis.getReleaseAnalyzed().add(release);
                     }
                 }
             }
-        } catch (InterruptedException | UnparsableException e) {
+        } catch (InterruptedException | UnparsableException | ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            executor.shutdown();
+            exporter.saveProjectReleaseAnalysis(projectAnalysis);
+            return projectAnalysis;
         }
-        executor.shutdown();
-        return projectAnalysis;
     }
 
     private Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, Iterable<String>> fileEntry, Map<String, Iterable<String>> tokenizedFiles, FileAnalysis fa) {
@@ -93,7 +100,7 @@ public class OtherFilesNaturalness extends Analyze {
             NgramModel model = new NgramModelKylmImpl(setup.getN(), setup.getSmoother(), setup.getThreshold());
             model.train(training);
             FileData data = releaseData.getFile(fileEntry.getKey());
-            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getKey(), fileEntry.getValue(), setup.getTokenizer(),getApproachName(),fa);
+            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getValue(), setup.getTokenizer(), getApproachName(), fa);
         };
     }
 

@@ -84,4 +84,48 @@ public class ExporterExtended extends Exporter {
             return data;
         } else return null;
     }
+
+    public void saveReleaseAnalysis(ReleaseAnalysis releaseAnalysis, String project) throws IOException {
+        checkFolderDestination(resourcesPathExtended.getAnalysisPath());
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getAnalysisPath() + project +"_"+ releaseAnalysis.getRelease() +"-analyzedData.obj", "rw");
+        FileOutputStream fos = new FileOutputStream(raf.getFD());
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        out.writeObject(releaseAnalysis);
+        out.flush();
+        fos.close();
+    }
+
+    public ReleaseAnalysis loadReleaseAnalysis(String project,String release) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getAnalysisPath() + project+"_"+ release + "-analyzedData.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            ReleaseAnalysis data = (ReleaseAnalysis) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
+
+    public void saveProjectReleaseAnalysis(ProjectReleaseAnalysed dataset) throws IOException {
+        checkFolderDestination(resourcesPathExtended.getAnalysisPath());
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getAnalysisPath() + dataset.getProject() + "-analyzedProRelData.obj", "rw");
+        FileOutputStream fos = new FileOutputStream(raf.getFD());
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        out.writeObject(dataset);
+        out.flush();
+        fos.close();
+    }
+
+    public ProjectReleaseAnalysed loadProjectReleaseAnalysis(String project) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getAnalysisPath() + project + "-analyzedProRelData.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            ProjectReleaseAnalysed data = (ProjectReleaseAnalysed) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
 }

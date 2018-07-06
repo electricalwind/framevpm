@@ -1,5 +1,6 @@
 package framevpm.analyze.approaches;
 
+import data7.Exporter;
 import data7.Resources;
 import framevpm.ResourcesPathExtended;
 import framevpm.analyze.Analyze;
@@ -10,6 +11,8 @@ import framevpm.organize.model.FixData;
 import framevpm.organize.model.ReleaseData;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -21,7 +24,7 @@ public abstract class PerFileAnalysis extends Analyze {
     }
 
     @Override
-    public ProjectAnalysis processFeatures() throws IOException {
+    public ProjectReleaseAnalysed processFeatures() throws IOException {
         ExecutorService executor = Executors.newFixedThreadPool(Resources.NB_THREADS);
         CompletionService<FileAnalysis> completionService = new ExecutorCompletionService(executor);
         System.out.println("Starting: " + getApproachName());
@@ -31,7 +34,10 @@ public abstract class PerFileAnalysis extends Analyze {
                 if (releaseData.getFileMap().size() != 0) {
                     System.out.println("Starting: " + release);
                     Map<String, String> files = loadVersion(release);
-                    ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
+                    ReleaseAnalysis releaseAnalysis = exporter.loadReleaseAnalysis(project, release);
+                    if (releaseAnalysis == null) {
+                        releaseAnalysis = new ReleaseAnalysis(release);//projectAnalysis.getOrCreateReleaseAnalysis(release);
+                    }
                     if (releaseAnalysis.addApproache(getApproachName())) {
                         int count = 0;
                         for (Map.Entry<String, String> fileEntry : files.entrySet()) {
@@ -61,15 +67,19 @@ public abstract class PerFileAnalysis extends Analyze {
                         }
                         System.out.println("error: " + error);
                         System.out.println("done rel: " + release);
-                        exporter.saveProjectAnalysis(projectAnalysis);
+                        exporter.saveReleaseAnalysis(releaseAnalysis, project);
+                        projectAnalysis.getReleaseAnalyzed().add(release);
                     }
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            executor.shutdown();
+            exporter.saveProjectReleaseAnalysis(projectAnalysis);
+            return projectAnalysis;
         }
-        executor.shutdown();
-        return projectAnalysis;
+
     }
 
     public Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, String> fileToAnalyze, String release, FileAnalysis fa) {

@@ -7,6 +7,7 @@ import framevpm.analyze.approaches.naturalness.setup.NaturalnessSetup;
 
 import framevpm.analyze.model.FileAnalysis;
 import framevpm.analyze.model.ProjectAnalysis;
+import framevpm.analyze.model.ProjectReleaseAnalysed;
 import framevpm.analyze.model.ReleaseAnalysis;
 import framevpm.organize.model.FileData;
 import framevpm.organize.model.ReleaseData;
@@ -33,7 +34,7 @@ public class PreviousVersionNaturalness extends Analyze {
     }
 
     @Override
-    public ProjectAnalysis processFeatures() throws IOException {
+    public ProjectReleaseAnalysed processFeatures() throws IOException {
         ExecutorService executor = Executors.newFixedThreadPool(1);
         CompletionService<FileAnalysis> completionService = new ExecutorCompletionService(executor);
         System.out.println("Starting: " + getApproachName());
@@ -48,7 +49,10 @@ public class PreviousVersionNaturalness extends Analyze {
                 }
                 if (releaseData.getFileMap().size() != 0) {
                     if (tokenizedPreviousRelease != null) {
-                        ReleaseAnalysis releaseAnalysis = projectAnalysis.getOrCreateReleaseAnalysis(release);
+                        ReleaseAnalysis releaseAnalysis = exporter.loadReleaseAnalysis(project, release);
+                        if (releaseAnalysis == null) {
+                            releaseAnalysis = new ReleaseAnalysis(release);//projectAnalysis.getOrCreateReleaseAnalysis(release);
+                        }
                         NgramModel model = new NgramModelKylmImpl(setup.getN(), setup.getSmoother(), setup.getThreshold());
                         model.train(tokenizedPreviousRelease);
                         if (releaseAnalysis.addApproache(getApproachName())) {
@@ -80,23 +84,27 @@ public class PreviousVersionNaturalness extends Analyze {
                             }
                             System.out.println("error: " + error);
                             System.out.println("done rel: " + release);
-                            exporter.saveProjectAnalysis(projectAnalysis);
+                            exporter.saveReleaseAnalysis(releaseAnalysis, project);
+                            projectAnalysis.getReleaseAnalyzed().add(release);
                         }
                     }
                 }
                 tokenizedPreviousRelease = new ArrayList<>(tokenizedFiles.values());
             }
-        } catch (InterruptedException | UnparsableException | TrainingFailedException e) {
+        } catch (InterruptedException | UnparsableException | TrainingFailedException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        executor.shutdown();
-        return projectAnalysis;
+        finally {
+            executor.shutdown();
+            exporter.saveProjectReleaseAnalysis(projectAnalysis);
+            return projectAnalysis;
+        }
     }
 
     private Callable<FileAnalysis> handleFile(ReleaseData releaseData, Map.Entry<String, Iterable<String>> fileEntry, NgramModel model, FileAnalysis fa) {
         return () -> {
             FileData data = releaseData.getFile(fileEntry.getKey());
-            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getKey(), fileEntry.getValue(), setup.getTokenizer(), getApproachName(), fa);
+            return NaturalnessComputation.computeNaturalness(data, model, fileEntry.getValue(), setup.getTokenizer(), getApproachName(), fa);
         };
     }
 

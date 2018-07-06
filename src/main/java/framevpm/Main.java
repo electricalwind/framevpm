@@ -13,7 +13,8 @@ import java.text.ParseException;
 public class Main {
     public static void main(String[] args) {
         ResourcesPathExtended pathExtended = new ResourcesPathExtended("/home/matthieu/vpm/");
-        Project[] projects = new Project[]{CProjects.SYSTEMD, CProjects.OPEN_SSL, CProjects.WIRESHARK, CProjects.LINUX_KERNEL};
+        Project[] projects = new Project[]{//CProjects.SYSTEMD, CProjects.OPEN_SSL,
+                CProjects.WIRESHARK, CProjects.LINUX_KERNEL};
         for (Project project : projects) {
             try {
                 new Importer(pathExtended).updateOrCreateDatasetFor(project);
