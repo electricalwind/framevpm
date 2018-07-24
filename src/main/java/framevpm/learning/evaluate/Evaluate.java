@@ -39,10 +39,19 @@ public class Evaluate {
         classifier.buildClassifier(traininginstances);
         long endTime = System.currentTimeMillis();
         System.out.println("Training took " + (endTime - startTime) + " milliseconds");
+        double[][] probresults = new double[testinginstances.size()][];
+        int i =0;
+        testinginstances.forEach(instance -> {
+            try {
+                probresults[i] = classifier.distributionForInstance(instance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         Evaluation eval = new Evaluation(traininginstances);
         double[] resultlist = eval.evaluateModel(classifier, testinginstances);
         double[][] confusionMatrix = eval.confusionMatrix();
-        ExperimentResult result = new ExperimentResult(resultlist, new Result(confusionMatrix));
+        ExperimentResult result = new ExperimentResult(probresults,resultlist, new Result(confusionMatrix));
         return result;
     }
 

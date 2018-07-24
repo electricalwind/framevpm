@@ -76,6 +76,11 @@
             <version>3.9.2</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>de.erichseifert.gral</groupId>
+            <artifactId>gral-core</artifactId>
+            <version>0.11</version>
+        </dependency>
     </dependencies>
 
     <build>
