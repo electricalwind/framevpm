@@ -14,7 +14,7 @@ import java.util.Map;
 @SuppressWarnings("Duplicates")
 public class SimpleCodeMetrics extends PerFileAnalysis {
 
-    private final static String NAME = "Simple Metrics";
+    public final static String NAME = "Simple Metrics";
 
     public SimpleCodeMetrics(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
@@ -33,6 +33,7 @@ public class SimpleCodeMetrics extends PerFileAnalysis {
         objectMap.put("countDeclFunction", metrics.countDeclFunction());
         objectMap.put("countDeclVariable", metrics.countDeclvariable());
         return new Analysis(objectMap);
+
     }
 
     @Override

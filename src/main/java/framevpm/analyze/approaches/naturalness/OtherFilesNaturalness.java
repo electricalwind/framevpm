@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
 public class OtherFilesNaturalness extends Analyze {
-    private final static String NAME = "Other Files Naturalness";
+    public final static String NAME = "Other Files Naturalness";
     private final NaturalnessSetup setup;
 
 

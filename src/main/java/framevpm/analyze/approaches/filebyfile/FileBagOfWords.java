@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class FileBagOfWords extends PerFileAnalysis {
 
-    private final static String NAME = "Bag Of Word";
+    public final static String NAME = "Bag Of Word";
 
     public FileBagOfWords(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);

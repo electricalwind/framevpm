@@ -1,4 +1,4 @@
-package framevpm.learning.evaluate;
+package framevpm.learning;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.Logistic;
@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Classifiers {
-    public static final Classifier createLogisticRegression() { return new Logistic();
+    public static final Classifier createLogisticRegression() {
+        return new Logistic();
     }
 
     public static final Classifier createRF() {
@@ -47,9 +48,9 @@ public class Classifiers {
         classifiers.add("RandomForest");
         //classifiers.add("J48");
         //classifiers.add("Ada");
-        classifiers.add("SVM");
-        //classifiers.add("KNear");
-        //classifiers.add("MLPerceptron");
+        //classifiers.add("SVM");
+        classifiers.add("KNear");
+        classifiers.add("MLPerceptron");
         return classifiers;
     }
 

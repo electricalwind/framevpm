@@ -4,9 +4,14 @@ package framevpm;
 import data7.Exporter;
 import framevpm.analyze.model.*;
 import framevpm.bugcollector.model.BugDataset;
+import framevpm.learning.model.ApproachResult;
+import framevpm.learning.model.Experiment;
 import framevpm.organize.model.ProjectData;
+import framevpm.learning.splitter.fileMeta.VulnerabilityInfo;
 
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 
 import static data7.Utils.checkFolderDestination;
@@ -87,7 +92,7 @@ public class ExporterExtended extends Exporter {
 
     public void saveReleaseAnalysis(ReleaseAnalysis releaseAnalysis, String project) throws IOException {
         checkFolderDestination(resourcesPathExtended.getAnalysisPath());
-        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getAnalysisPath() + project +"_"+ releaseAnalysis.getRelease() +"-analyzedData.obj", "rw");
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getAnalysisPath() + project + "_" + releaseAnalysis.getRelease() + "-analyzedData.obj", "rw");
         FileOutputStream fos = new FileOutputStream(raf.getFD());
         ObjectOutputStream out = new ObjectOutputStream(fos);
         out.writeObject(releaseAnalysis);
@@ -95,8 +100,8 @@ public class ExporterExtended extends Exporter {
         fos.close();
     }
 
-    public ReleaseAnalysis loadReleaseAnalysis(String project,String release) throws IOException, ClassNotFoundException {
-        File file = new File(resourcesPathExtended.getAnalysisPath() + project+"_"+ release + "-analyzedData.obj");
+    public ReleaseAnalysis loadReleaseAnalysis(String project, String release) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getAnalysisPath() + project + "_" + release + "-analyzedData.obj");
         if (file.exists()) {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);
@@ -123,6 +128,72 @@ public class ExporterExtended extends Exporter {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);
             ProjectReleaseAnalysed data = (ProjectReleaseAnalysed) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
+
+    public void saveProjectVulnData(String project, Map<String, Map<String, VulnerabilityInfo>> projectData) throws IOException {
+        checkFolderDestination(resourcesPathExtended.getStatPath());
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getStatPath() + project + "-VulData.obj", "rw");
+        FileOutputStream fos = new FileOutputStream(raf.getFD());
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        out.writeObject(projectData);
+        out.flush();
+        fos.close();
+    }
+
+    public Map<String, Map<String, VulnerabilityInfo>> loadProjectVulnData(String project) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getStatPath() + project + "-VulData.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            Map<String, Map<String, VulnerabilityInfo>> data = (Map<String, Map<String, VulnerabilityInfo>>) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
+
+    public void saveExperiments(String split, String project, List<Experiment> experiments) throws IOException {
+        checkFolderDestination(resourcesPathExtended.getExperimentPath());
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getExperimentPath() + project + "-" + split + "-experiments.obj", "rw");
+        FileOutputStream fos = new FileOutputStream(raf.getFD());
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        out.writeObject(experiments);
+        out.flush();
+        fos.close();
+    }
+
+    public List<Experiment> loadExperiments(String project, String split) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getExperimentPath() + project + "-" + split + "-experiments.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            List<Experiment> data = (List<Experiment>) read.readObject();
+            read.close();
+            fileIn.close();
+            return data;
+        } else return null;
+    }
+
+    public void saveApproachResult(String project, String split, String model, ApproachResult approachResult) throws IOException {
+        checkFolderDestination(resourcesPathExtended.getExperimentPath());
+        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getExperimentPath() + project + "-" + split + "-" + model + "-" + approachResult.getApproach() + "-" + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.obj", "rw");
+        FileOutputStream fos = new FileOutputStream(raf.getFD());
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        out.writeObject(approachResult);
+        out.flush();
+        fos.close();
+    }
+
+    public ApproachResult loadExperiments(String project, String split, String model, String approach, String classifier, boolean smote) throws IOException, ClassNotFoundException {
+        File file = new File(resourcesPathExtended.getExperimentPath() + project + "-" + split + "-" + model + "-" + approach + "-" + classifier + "-" + smote + "-result.obj");
+        if (file.exists()) {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream read = new ObjectInputStream(fileIn);
+            ApproachResult data = (ApproachResult) read.readObject();
             read.close();
             fileIn.close();
             return data;

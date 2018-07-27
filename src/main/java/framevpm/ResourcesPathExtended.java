@@ -9,7 +9,8 @@ public class ResourcesPathExtended extends ResourcesPath {
     private final String organizeData;
     private final String analysisPath;
     private final String versionPath;
-    private final String csvPath;
+    private final String statPath;
+    private final String experimentPath;
 
     public ResourcesPathExtended(String path) {
         super(path);
@@ -17,7 +18,8 @@ public class ResourcesPathExtended extends ResourcesPath {
         this.organizeData = getSavingPath() + "organizeData/";
         this.analysisPath = getSavingPath() + "analysisData/";
         this.versionPath = getSavingPath() + "versions/";
-        this.csvPath = getSavingPath() + "csv/";
+        this.statPath = getSavingPath() + "stats/";
+        this.experimentPath = getSavingPath() +"experiments/";
     }
 
     public String getBugDatasetPath() {
@@ -36,6 +38,10 @@ public class ResourcesPathExtended extends ResourcesPath {
         return versionPath;
     }
 
-    public String getCsvPath() { return csvPath; }
+    public String getStatPath() { return statPath; }
+
+    public String getExperimentPath() {
+        return experimentPath;
+    }
 }
 

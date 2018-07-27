@@ -81,6 +81,11 @@
             <artifactId>gral-core</artifactId>
             <version>0.11</version>
         </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>SMOTE</artifactId>
+            <version>1.0.2</version>
+        </dependency>
     </dependencies>
 
     <build>

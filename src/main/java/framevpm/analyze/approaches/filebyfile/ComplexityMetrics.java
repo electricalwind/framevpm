@@ -15,7 +15,7 @@ import java.util.Map;
 import static framevpm.Utils.mapOfCallsFunction;
 
 public class ComplexityMetrics extends PerFileAnalysis {
-    private final static String NAME = "Complexity";
+    public final static String NAME = "Complexity";
 
     public ComplexityMetrics(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);

@@ -19,13 +19,13 @@ public class CSVExporter {
     private final String path;
 
     public CSVExporter(ResourcesPathExtended resourcesPathExtended) {
-        this.path = resourcesPathExtended.getCsvPath();
+        this.path = resourcesPathExtended.getStatPath();
         checkFolderDestination(path);
     }
 
     public void kindCSV(String project, Map<String, Map<String, Integer>> mapKindRel) throws IOException {
         CSVWriter writerom = new CSVWriter(new FileWriter(new File(path + project + "-kind.csv"), false));
-        writerom.writeNext(new String[]{"Release", "CWE", "Number of Vulnerable File"});
+        writerom.writeNext(new String[]{"Release", "CWE", "Number of Vulnerability"});
 
         String[] cwes = ProjectKindFactory.retrieveProjectKind(project);
         if (cwes == null) throw new RuntimeException("project invalid");

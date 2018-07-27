@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class FileIncludes extends PerFileAnalysis {
 
-    private final static String NAME = "Includes";
+    public final static String NAME = "Includes";
 
     public FileIncludes(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);

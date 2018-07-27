@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class PreviousVersionNaturalness extends Analyze {
-    private final static String NAME = "Previous Release Naturalness";
+    public final static String NAME = "Previous Release Naturalness";
     private final NaturalnessSetup setup;
 
 

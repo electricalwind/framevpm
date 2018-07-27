@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CodeChurnDeveloperMetrics extends PerFileAnalysis {
-    private final static String NAME = "Code Churn Developers";
+    public final static String NAME = "Code Churn Developers";
 
     private GitActions git;
 

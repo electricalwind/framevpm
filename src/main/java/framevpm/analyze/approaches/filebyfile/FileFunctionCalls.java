@@ -16,7 +16,7 @@ import static framevpm.Utils.mapOfCallsFunction;
 
 public class FileFunctionCalls extends PerFileAnalysis {
 
-    private final static String NAME = "Function Calls";
+    public final static String NAME = "Function Calls";
 
     public FileFunctionCalls(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
         super(pathExtended, project);
