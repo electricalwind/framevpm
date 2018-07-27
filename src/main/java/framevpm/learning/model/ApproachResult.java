@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class ApproachResult implements Serializable {
-    private static final long serialVersionUID = 20180415L;
+    private static final long serialVersionUID = 20180727L;
     private final String approach;
 
     private final boolean smote;

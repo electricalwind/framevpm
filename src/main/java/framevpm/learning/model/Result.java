@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class Result implements Serializable {
 
-    private static final long serialVersionUID = 20180415L;
+    private static final long serialVersionUID = 20180727L;
     private final double[][] confusionMatrix;
 
     /**

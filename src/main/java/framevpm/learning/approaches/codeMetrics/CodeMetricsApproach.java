@@ -6,10 +6,8 @@ import framevpm.analyze.approaches.filebyfile.SimpleCodeMetrics;
 import framevpm.analyze.model.Analysis;
 import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
-import framevpm.learning.model.ExperimentResult;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
-import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -28,7 +26,7 @@ public class CodeMetricsApproach extends Approach {
         super(experiments, model);
     }
 
-    protected void prepareInstances() {
+    public void prepareInstances() {
         ArrayList<Attribute> featureVector = generateFVCodeMetricsALL(model.getClassList());
         for (Experiment experiment : experiments) {
             Instances training = generateInstances("training", experiment.getTraining(), featureVector);

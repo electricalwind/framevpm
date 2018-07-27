@@ -33,5 +33,5 @@ public class VulNotVul implements ClassModel {
         return NAME;
     }
 
-    public final static String NAME = "vulnotvul";
+    public final static String NAME = "Vulnotvul";
 }

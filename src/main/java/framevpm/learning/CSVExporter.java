@@ -26,16 +26,17 @@ public class CSVExporter {
         CSVWriter writerom = new CSVWriter(new FileWriter(new File(path + project + "-" + split + "-" + model.getName() + "-" + approachResult.getApproach() + "-" + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.csv"), false));
 
         List<String> listClass = model.getClassList();
-        int size = 6 + listClass.size();
+        int size = 7 + listClass.size();
         String[] header = new String[size];
         header[0] = "Experiment";
         header[1] = "File";
         header[2] = "Class";
         header[3] = "CWE";
         header[4] = "CVSS";
-        header[5] = "Prediction";
+        header[5] = "Expected";
+        header[6] = "Prediction";
         for (int i = 0; i < listClass.size(); i++) {
-            header[6 + i] = listClass.get(i);
+            header[7 + i] = "Probability of" + listClass.get(i);
         }
 
         writerom.writeNext(header);
@@ -51,9 +52,10 @@ public class CSVExporter {
                         line[3] = vulnerabilityInfo.getCwe();
                         line[4] = String.valueOf(vulnerabilityInfo.getCvss());
                     }
-                    line[5] = listClass.get((int) experimentresult.getClassification());
+                    line[5] = listClass.get((int) experimentresult.getExpectedClassif());
+                    line[6] = listClass.get((int) experimentresult.getClassification());
                     for (int i = 0; i < listClass.size(); i++) {
-                        line[6 + i] = String.valueOf(experimentresult.getDistribresult()[i]);
+                        line[7 + i] = String.valueOf(experimentresult.getDistribresult()[i]);
                     }
                     writerom.writeNext(line);
                 }));

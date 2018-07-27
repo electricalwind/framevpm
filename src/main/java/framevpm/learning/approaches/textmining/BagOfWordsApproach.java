@@ -24,7 +24,7 @@ public class BagOfWordsApproach extends Approach {
     }
 
     @Override
-    protected void prepareInstances() {
+    public void prepareInstances() {
         for (Experiment experiment : experiments) {
             ArrayList<Attribute> featureVector = generateFeatureVector(experiment.getTraining());
             if (featureVector.size() > 1) {

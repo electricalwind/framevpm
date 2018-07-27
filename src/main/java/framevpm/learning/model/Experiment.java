@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Experiment implements Serializable {
 
-    private static final long serialVersionUID = 20180721L;
+    private static final long serialVersionUID = 20180727L;
 
     private final String name;
     private final LinkedHashMap<FileMetaInf,Map<String,Analysis>> training;

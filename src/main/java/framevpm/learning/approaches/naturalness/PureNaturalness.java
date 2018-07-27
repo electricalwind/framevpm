@@ -1,4 +1,4 @@
-package framevpm.learning.approaches.ifc;
+package framevpm.learning.approaches.naturalness;
 
 import framevpm.analyze.approaches.filebyfile.FileIncludes;
 import framevpm.analyze.model.Analysis;
@@ -6,20 +6,23 @@ import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.SparseInstance;
 
 import java.util.*;
 
-public class IncludesApproach extends Approach {
+public class PureNaturalness extends Approach {
 
-    public IncludesApproach(List<Experiment> experiments, ClassModel model) {
+    public PureNaturalness(List<Experiment> experiments, ClassModel model) {
         super(experiments, model);
     }
 
     @Override
     public void prepareInstances() {
         for (Experiment experiment : experiments) {
-            ArrayList<Attribute> featureVector = generateFeatureVector(experiment.getTraining());
+            ArrayList<Attribute> featureVector = generateFeatureVector(experiment);
             if (featureVector.size() > 1) {
                 Instances training = generateInstances("training", experiment.getTraining(), featureVector);
                 Instances testing = generateInstances("testing", experiment.getTesting(), featureVector);
@@ -45,36 +48,46 @@ public class IncludesApproach extends Approach {
         double[] values = new double[featureVector.size()];
         String type = model.correspondingToTypeFile(fileMetaInf.getType());
         if (type == null) return null;
+
+
         for (int i = 0; i < featureVector.size() - 1; i++) {
             String name = featureVector.get(i).name();
-            if (stringAnalysisMap.get(FileIncludes.NAME).getFeatureMap().containsKey(name)) values[i] = 1;
-            else values[i] = 0;
+            values[i] = (double) stringAnalysisMap.get(name).getFeatureMap().get("cross-Entropy");
         }
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
         return new SparseInstance(1, values);
     }
 
-    private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
-        String interestingClass = model.getClassList().get(0);
-        Map<String, Integer> countIncludes = new HashMap<>();
-        int[] i = {0};
-        experiment.forEach((file, analysis) -> {
-            if (model.correspondingToTypeFile(file.getType()).equals(interestingClass)) {
-                i[0]++;
-                analysis.get(FileIncludes.NAME).getFeatureMap().keySet().forEach(include -> countIncludes.put(include, countIncludes.getOrDefault(include, 0)+1));
-            }
+    private ArrayList<Attribute> generateFeatureVector(Experiment experiment) {
+        Set<String> availableMesure = new HashSet<>();
+        boolean[] first = {true};
+        experiment.getTraining().forEach((file, analysis) -> {
+            analysis.keySet().stream().filter(approach -> approach.contains("Naturalness")).forEach(natural -> {
+                if (first[0]) {
+                    availableMesure.add(natural);
+                } else {
+                    if (!availableMesure.contains(natural)) {
+                        availableMesure.remove(natural);
+                    }
+                }
+            });
         });
 
-        int threshold = (i[0] * 3 / 100) + 1;
+        experiment.getTesting().forEach((file, analysis) -> {
+            analysis.keySet().stream().filter(approach -> approach.contains("Naturalness")).forEach(natural -> {
+                if (!availableMesure.contains(natural)) {
+                    availableMesure.remove(natural);
+                }
+            });
+        });
         ArrayList<Attribute> attributes = new ArrayList<>();
-        countIncludes.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
-
+        availableMesure.forEach(mesure-> attributes.add(new Attribute(mesure)));
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;
     }
 
     @Override
     public String getApproachName() {
-        return "Includes";
+        return "PureNaturalness";
     }
 }
