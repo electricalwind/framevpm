@@ -44,7 +44,7 @@ public final static  String NAME="nextReleaseGen";
                 for (Map.Entry<String, FileAnalysis> file : currentreleaseanaly.getFileAnalysisMap().entrySet()) {
                     Map<String, Analysis> analysis = file.getValue().getOriginal();
                     VulnerabilityInfo vulnerabilityInfo = release.getValue().getOrDefault(file.getKey(), null);
-                    FileMetaInf metaInf = new FileMetaInf(file.getKey(), file.getValue().getType(), vulnerabilityInfo);
+                    FileMetaInf metaInf = new FileMetaInf(release.getKey(), file.getKey(), file.getValue().getType(), vulnerabilityInfo);
                     testing.put(metaInf, analysis);
                 }
                 if (training != null) {

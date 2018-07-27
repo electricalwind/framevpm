@@ -51,7 +51,7 @@ public class FunctionCallsApproach extends Approach {
         if (type == null) return null;
         for (int i = 0; i < featureVector.size() - 1; i++) {
             String name = featureVector.get(i).name();
-            values[i] = (double) stringAnalysisMap.get(FileFunctionCalls.NAME).getFeatureMap().getOrDefault(name,0);
+            values[i] = (int) stringAnalysisMap.get(FileFunctionCalls.NAME).getFeatureMap().getOrDefault(name,0);
         }
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
         return new SparseInstance(1, values);
