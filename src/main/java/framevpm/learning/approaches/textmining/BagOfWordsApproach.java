@@ -1,18 +1,25 @@
-package framevpm.learning.approaches.ifc;
+package framevpm.learning.approaches.textmining;
 
-import framevpm.analyze.approaches.filebyfile.FileIncludes;
+import framevpm.analyze.approaches.filebyfile.FileBagOfWords;
 import framevpm.analyze.model.Analysis;
 import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.SparseInstance;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.Discretize;
+import weka.filters.unsupervised.attribute.RemoveUseless;
 
 import java.util.*;
 
-public class IncludesApproach extends Approach {
+@SuppressWarnings("Duplicates")
+public class BagOfWordsApproach extends Approach {
 
-    public IncludesApproach(List<Experiment> experiments, ClassModel model) {
+    public BagOfWordsApproach(List<Experiment> experiments, ClassModel model) {
         super(experiments, model);
     }
 
@@ -23,6 +30,22 @@ public class IncludesApproach extends Approach {
             if (featureVector.size() > 1) {
                 Instances training = generateInstances("training", experiment.getTraining(), featureVector);
                 Instances testing = generateInstances("testing", experiment.getTesting(), featureVector);
+                try {
+                    Discretize discretize = new Discretize();
+                    discretize.setUseKononenko(true);
+                    discretize.setMakeBinary(true);
+                    discretize.setUseBinNumbers(true);
+                    discretize.setInputFormat(training);
+                    training = Filter.useFilter(training, discretize);
+                    testing = Filter.useFilter(testing, discretize);
+                    RemoveUseless removeUseless = new RemoveUseless();
+                    removeUseless.setMaximumVariancePercentageAllowed(99.0);
+                    removeUseless.setInputFormat(training);
+                    training = Filter.useFilter(training, removeUseless);
+                    testing = Filter.useFilter(testing, removeUseless);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 preparedInstances.put(experiment.getName(), new Instances[]{training, testing});
             }
         }
@@ -47,8 +70,7 @@ public class IncludesApproach extends Approach {
         if (type == null) return null;
         for (int i = 0; i < featureVector.size() - 1; i++) {
             String name = featureVector.get(i).name();
-            if (stringAnalysisMap.get(FileIncludes.NAME).getFeatureMap().containsKey(name)) values[i] = 1;
-            else values[i] = 0;
+            values[i] = (int) stringAnalysisMap.get(FileBagOfWords.NAME).getFeatureMap().getOrDefault(name, 0);
         }
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
         return new SparseInstance(1, values);
@@ -56,18 +78,18 @@ public class IncludesApproach extends Approach {
 
     private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
         String interestingClass = model.getClassList().get(0);
-        Map<String, Integer> countIncludes = new HashMap<>();
+        Map<String, Integer> countWord = new HashMap<>();
         int[] i = {0};
         experiment.forEach((file, analysis) -> {
             if (model.correspondingToTypeFile(file.getType()).equals(interestingClass)) {
                 i[0]++;
-                analysis.get(FileIncludes.NAME).getFeatureMap().keySet().forEach(include -> countIncludes.put(include, countIncludes.getOrDefault(include, 0)+1));
+                analysis.get(FileBagOfWords.NAME).getFeatureMap().keySet().forEach(word -> countWord.put(word, countWord.getOrDefault(word, 0) + 1));
             }
         });
 
-        int threshold = (i[0] * 3 / 100) + 1;
+        int threshold = (i[0] * 5 / 100) + 1;
         ArrayList<Attribute> attributes = new ArrayList<>();
-        countIncludes.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
+        countWord.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
 
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;
@@ -75,6 +97,6 @@ public class IncludesApproach extends Approach {
 
     @Override
     public String getApproachName() {
-        return "Includes";
+        return "BagOfWords";
     }
 }

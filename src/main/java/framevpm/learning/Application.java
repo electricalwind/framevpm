@@ -7,6 +7,7 @@ import framevpm.ResourcesPathExtended;
 import framevpm.learning.approaches.Approach;
 import framevpm.learning.approaches.codeMetrics.CodeMetricsApproach;
 import framevpm.learning.approaches.ifc.IncludesApproach;
+import framevpm.learning.approaches.textmining.BagOfWordsApproach;
 import framevpm.learning.model.ApproachResult;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.classmodel.ClassModel;
@@ -36,7 +37,7 @@ public class Application {
                 experiments = generalSplit.generateExperiment();
             }
             ClassModel model = new VulNotVul();
-            Approach approach = new IncludesApproach(experiments, model);
+            Approach approach = new BagOfWordsApproach(experiments, model);
             //new CodeMetricsApproach(experiments, new VulNotVul());
 
             for (String classifier : getClassifiers()) {

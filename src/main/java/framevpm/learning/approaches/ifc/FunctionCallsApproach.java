@@ -1,18 +1,22 @@
 package framevpm.learning.approaches.ifc;
 
-import framevpm.analyze.approaches.filebyfile.FileIncludes;
+import framevpm.analyze.approaches.filebyfile.FileFunctionCalls;
 import framevpm.analyze.model.Analysis;
 import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.SparseInstance;
 
 import java.util.*;
 
-public class IncludesApproach extends Approach {
+@SuppressWarnings("Duplicates")
+public class FunctionCallsApproach extends Approach {
 
-    public IncludesApproach(List<Experiment> experiments, ClassModel model) {
+    public FunctionCallsApproach(List<Experiment> experiments, ClassModel model) {
         super(experiments, model);
     }
 
@@ -47,8 +51,7 @@ public class IncludesApproach extends Approach {
         if (type == null) return null;
         for (int i = 0; i < featureVector.size() - 1; i++) {
             String name = featureVector.get(i).name();
-            if (stringAnalysisMap.get(FileIncludes.NAME).getFeatureMap().containsKey(name)) values[i] = 1;
-            else values[i] = 0;
+            values[i] = (double) stringAnalysisMap.get(FileFunctionCalls.NAME).getFeatureMap().getOrDefault(name,0);
         }
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
         return new SparseInstance(1, values);
@@ -56,18 +59,18 @@ public class IncludesApproach extends Approach {
 
     private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
         String interestingClass = model.getClassList().get(0);
-        Map<String, Integer> countIncludes = new HashMap<>();
+        Map<String, Integer> countFC = new HashMap<>();
         int[] i = {0};
         experiment.forEach((file, analysis) -> {
             if (model.correspondingToTypeFile(file.getType()).equals(interestingClass)) {
                 i[0]++;
-                analysis.get(FileIncludes.NAME).getFeatureMap().keySet().forEach(include -> countIncludes.put(include, countIncludes.getOrDefault(include, 0)+1));
+                analysis.get(FileFunctionCalls.NAME).getFeatureMap().keySet().forEach(fc -> countFC.put(fc, countFC.getOrDefault(fc, 0) + 1));
             }
         });
 
-        int threshold = (i[0] * 3 / 100) + 1;
+        int threshold = (i[0] * 5 / 100) + 1;
         ArrayList<Attribute> attributes = new ArrayList<>();
-        countIncludes.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
+        countFC.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
 
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;
@@ -75,6 +78,6 @@ public class IncludesApproach extends Approach {
 
     @Override
     public String getApproachName() {
-        return "Includes";
+        return "FunctionCalls";
     }
 }
