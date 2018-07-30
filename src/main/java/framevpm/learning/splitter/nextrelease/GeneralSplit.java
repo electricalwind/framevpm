@@ -8,14 +8,13 @@ import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.splitter.ExperimentSplitter;
 import framevpm.learning.splitter.fileMeta.VulnerabilityInfo;
+import framevpm.organize.model.FileType;
+import framevpm.project.ProjectInfoFactory;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class GeneralSplit extends ExperimentSplitter {
+public class GeneralSplit extends ReleaseSplitter {
 public final static  String NAME="nextReleaseGen";
 
     public GeneralSplit(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {
@@ -48,10 +47,9 @@ public final static  String NAME="nextReleaseGen";
                     testing.put(metaInf, analysis);
                 }
                 if (training != null) {
-                    Experiment experiment = new Experiment(oldrelease + "-to-" + currentrelease, training, testing);
+                    Experiment experiment = new Experiment(currentrelease, training, testing);
                     experiments.add(experiment);
                 }
-                oldrelease = currentrelease;
                 training = testing;
             }
         }
@@ -59,6 +57,8 @@ public final static  String NAME="nextReleaseGen";
         exporter.saveExperiments(NAME, project, experiments);
         return experiments;
     }
+
+
 
     @Override
     public String getName() {

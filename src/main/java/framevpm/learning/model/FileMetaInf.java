@@ -8,11 +8,11 @@ import java.util.Objects;
 
 public class FileMetaInf implements Serializable {
 
-    private static final long serialVersionUID = 20180727L;
+    private static final long serialVersionUID = 20180730L;
 
     private final String release;
     private final String file;
-    private final FileType type;
+    private FileType type;
     private final VulnerabilityInfo vulnerabilityInfo;
 
 
@@ -53,5 +53,9 @@ public class FileMetaInf implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(getRelease(), getFile(), getType(), getVulnerabilityInfo());
+    }
+
+    public void setType(FileType fileType) {
+        this.type = fileType;
     }
 }

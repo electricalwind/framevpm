@@ -19,6 +19,7 @@ import framevpm.learning.model.classmodel.VulBugClear;
 import framevpm.learning.model.classmodel.VulNotVul;
 import framevpm.learning.splitter.ExperimentSplitter;
 import framevpm.learning.splitter.nextrelease.GeneralSplit;
+import framevpm.learning.splitter.nextrelease.ReleaseSplitter;
 import framevpm.learning.splitter.nextrelease.ThreeLastSplit;
 
 import java.io.IOException;
@@ -50,37 +51,45 @@ public class Application {
                 System.out.println("|Starting Project: " + project.getName());
                 for (ClassModel model : classModels) {
                     System.out.println("|    Starting Class Model: " + model.getName());
-                    ExperimentSplitter[] experimentSplitters = {
+                    ReleaseSplitter[] experimentSplitters = {
                             new GeneralSplit(pathExtended, project.getName()),
                             new ThreeLastSplit(pathExtended, project.getName())
                     };
 
 
-                    for (ExperimentSplitter experimentSplitter : experimentSplitters) {
+                    for (ReleaseSplitter experimentSplitter : experimentSplitters) {
                         System.out.println("|        Starting Experiment: " + experimentSplitter.getName());
-                        List<Experiment> experimentList = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
-                        if (experimentList == null) {
-                            experimentList = experimentSplitter.generateExperiment();
-                        }
-                        Approach[] approaches = {
-                                new NaturalnessAndCM(experimentList, model),
-                                new PureNaturalness(experimentList, model),
-                                new CodeMetricsApproach(experimentList, model),
-                                new IncludesApproach(experimentList, model),
-                                new FunctionCallsApproach(experimentList, model),
-                                new BagOfWordsApproach(experimentList, model)
-                        };
+                        List<Experiment>[] exp = new List[2];
+                        exp[0] = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
 
-                        for (Approach approach : approaches) {
-                            System.out.println("|            Starting Approach: " + approach.getApproachName());
-                            for (String classifier : getClassifiers()) {
-                                System.out.println("|                Starting Classifier: " + classifier);
-                                approach.prepareInstances();
-                                runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true);
-                                System.out.println("|                    1/2");
-                                runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, false);
-                                System.out.println("|                    2/2");
+                        if (exp[0] == null) {
+                            exp[0] = experimentSplitter.generateExperiment();
+                        }
+
+                        exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
+                        boolean realistic = false;
+                        for (List<Experiment> experimentList : exp) {
+                            Approach[] approaches = {
+                                    new NaturalnessAndCM(experimentList, model),
+                                    new PureNaturalness(experimentList, model),
+                                    new CodeMetricsApproach(experimentList, model),
+                                    new IncludesApproach(experimentList, model),
+                                    new FunctionCallsApproach(experimentList, model),
+                                    new BagOfWordsApproach(experimentList, model)
+                            };
+
+                            for (Approach approach : approaches) {
+                                System.out.println("|            Starting Approach: " + approach.getApproachName());
+                                for (String classifier : getClassifiers()) {
+                                    System.out.println("|                Starting Classifier: " + classifier);
+                                    approach.prepareInstances();
+                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, true);
+                                    System.out.println("|                    1/2");
+                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
+                                    System.out.println("|                    2/2");
+                                }
                             }
+                            realistic = true;
                         }
                     }
                 }
@@ -91,10 +100,10 @@ public class Application {
 
     }
 
-    private static void runwithSmote(ExporterExtended exporterExtended, CSVExporter csvExporter, Project project, ClassModel model, ExperimentSplitter experimentSplitter, Approach approach, String classifier, boolean smote) throws IOException {
+    private static void runwithSmote(ExporterExtended exporterExtended, CSVExporter csvExporter, Project project, ClassModel model, ExperimentSplitter experimentSplitter, Approach approach, String classifier, boolean realistic, boolean smote) throws IOException {
         ApproachResult result = approach.runWith(classifier, smote);
-        exporterExtended.saveApproachResult(project.getName(), experimentSplitter.getName(), model.getName(), result);
-        csvExporter.exportResultToCSV(project.getName(), experimentSplitter.getName(), model, result);
+        exporterExtended.saveApproachResult(project.getName(), experimentSplitter.getName(), model.getName(), realistic, result);
+        csvExporter.exportResultToCSV(project.getName(), experimentSplitter.getName(), model, realistic, result);
 
     }
 }

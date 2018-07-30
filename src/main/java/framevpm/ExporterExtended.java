@@ -178,7 +178,7 @@ public class ExporterExtended extends Exporter {
         } else return null;
     }
 
-    public void saveApproachResult(String project, String split, String model, ApproachResult approachResult) throws IOException {
+    public void saveApproachResult(String project, String split, String model, boolean realistic, ApproachResult approachResult) throws IOException {
         String path = resourcesPathExtended.getExperimentPath();
         checkFolderDestination(path);
         path += project + "/";
@@ -189,6 +189,10 @@ public class ExporterExtended extends Exporter {
         checkFolderDestination(path);
         path += approachResult.getApproach() + "/";
         checkFolderDestination(path);
+        if (realistic) {
+            path += "Realistic/";
+        }
+        checkFolderDestination(path);
         RandomAccessFile raf = new RandomAccessFile(path + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.obj", "rw");
         FileOutputStream fos = new FileOutputStream(raf.getFD());
         ObjectOutputStream out = new ObjectOutputStream(fos);
@@ -197,8 +201,12 @@ public class ExporterExtended extends Exporter {
         fos.close();
     }
 
-    public ApproachResult loadExperiments(String project, String split, String model, String approach, String classifier, boolean smote) throws IOException, ClassNotFoundException {
-        File file = new File(resourcesPathExtended.getExperimentPath() + project + "/" + split + "/" + model + "/" + approach + "/" + classifier + "-" + smote + "-result.obj");
+    public ApproachResult loadExperiments(String project, String split, String model, String approach, String classifier, boolean realistic, boolean smote) throws IOException, ClassNotFoundException {
+        String path = resourcesPathExtended.getExperimentPath() + project + "/" + split + "/" + model + "/" + approach + "/";
+        if (realistic) {
+            path += "Realistic/";
+        }
+        File file = new File(path + classifier + "-" + smote + "-result.obj");
         if (file.exists()) {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);

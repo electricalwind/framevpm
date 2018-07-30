@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class ThreeLastSplit extends ExperimentSplitter {
+public class ThreeLastSplit extends ReleaseSplitter {
     public final static String NAME = "3LastReleaseGen";
 
     public ThreeLastSplit(ResourcesPathExtended pathExtended, String project) throws IOException, ClassNotFoundException {

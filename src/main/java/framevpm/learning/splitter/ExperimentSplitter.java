@@ -31,6 +31,7 @@ public abstract class ExperimentSplitter {
 
     public abstract List<Experiment> generateExperiment() throws IOException, ClassNotFoundException;
 
+
     public abstract String getName();
 
 }

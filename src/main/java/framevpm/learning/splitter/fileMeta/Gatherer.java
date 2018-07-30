@@ -45,7 +45,6 @@ public class Gatherer {
         return finalVersion;
     }
 
-
     private void prepareVuln(Data7 data7) {
         Collection<Vulnerability> vulnds = data7.getVulnerabilitySet().getVulnerabilityDataset().values();
         for (Vulnerability vuln : vulnds) {
@@ -63,9 +62,9 @@ public class Gatherer {
                     Map<String, VulnerabilityInfo> releaseInfo = projectData.get(release);
                     files.forEach(file -> {
                         if (releaseInfo.containsKey(file)) {
-                            releaseInfo.get(file).update(vuln.getCwe(), vuln.getScore(), vuln.getCve());
+                            releaseInfo.get(file).update(vuln.getCwe(), vuln.getScore(), vuln.getCve(),vuln.getCreationTime());
                         } else {
-                            releaseInfo.put(file, new VulnerabilityInfo(vuln.getCwe(), vuln.getScore(), vuln.getCve()));
+                            releaseInfo.put(file, new VulnerabilityInfo(vuln.getCwe(), vuln.getScore(), vuln.getCve(), vuln.getCreationTime()));
                         }
                     });
 

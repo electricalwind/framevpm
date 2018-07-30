@@ -22,7 +22,7 @@ public class CSVExporter {
         checkFolderDestination(rpath);
     }
 
-    public void exportResultToCSV(String project, String split, ClassModel model, ApproachResult approachResult) throws IOException {
+    public void exportResultToCSV(String project, String split, ClassModel model, boolean realistic, ApproachResult approachResult) throws IOException {
         String path = rpath;
         checkFolderDestination(path);
         path += project + "/";
@@ -31,7 +31,11 @@ public class CSVExporter {
         checkFolderDestination(path);
         path += model.getName() + "/";
         checkFolderDestination(path);
-        path += approachResult.getApproach()+ "/";
+        path += approachResult.getApproach() + "/";
+        checkFolderDestination(path);
+        if (realistic) {
+            path += "Realistic/";
+        }
         checkFolderDestination(path);
         CSVWriter writerom = new CSVWriter(new FileWriter(new File(path + approachResult.getClassifier() + "-" + approachResult.isSmote() + ".csv"), false));
 
