@@ -45,10 +45,7 @@ public abstract class Approach {
                     training = instances[0];
                 }
 
-                long startTime = System.currentTimeMillis();
                 classifier.buildClassifier(training);
-                long endTime = System.currentTimeMillis();
-                System.out.println("Training for " + experiment + " took " + (endTime - startTime) + " milliseconds");
                 Map<String, ExperimentResult> experimentResultMap = new LinkedHashMap<>();
                 Experiment experimentdata = experiments.get(i[0]);
                 final int[] j = {0};
