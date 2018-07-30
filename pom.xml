@@ -130,8 +130,9 @@
                 <configuration>
 
                     <includePluginDependencies>true</includePluginDependencies>
-                    <mainClass>framevpm.Main</mainClass>
+                    <mainClass>framevpm.learning.Application</mainClass>
                     <arguments>
+                        <argument>/Users/matthieu/Desktop/data7/</argument>
                     </arguments>
                 </configuration>
             </plugin>

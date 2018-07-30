@@ -8,6 +8,7 @@ import framevpm.learning.approaches.Approach;
 import framevpm.learning.approaches.codeMetrics.CodeMetricsApproach;
 import framevpm.learning.approaches.ifc.FunctionCallsApproach;
 import framevpm.learning.approaches.ifc.IncludesApproach;
+import framevpm.learning.approaches.naturalness.NaturalnessAndCM;
 import framevpm.learning.approaches.naturalness.PureNaturalness;
 import framevpm.learning.approaches.textmining.BagOfWordsApproach;
 import framevpm.learning.model.ApproachResult;
@@ -28,49 +29,55 @@ import static framevpm.learning.Classifiers.getClassifiers;
 public class Application {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        ResourcesPathExtended pathExtended = new ResourcesPathExtended("/Users/matthieu/Desktop/data7/");
-        ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
-        CSVExporter csvExporter = new CSVExporter(pathExtended);
-        Project[] projects = new Project[]{
-                CProjects.OPEN_SSL,
-                CProjects.WIRESHARK
-                //, CProjects.LINUX_KERNEL
-        };
+        //"/Users/matthieu/Desktop/data7/"
+        if (args.length == 1) {
+            ResourcesPathExtended pathExtended = new ResourcesPathExtended(args[0]);
+            ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
+            CSVExporter csvExporter = new CSVExporter(pathExtended);
+            Project[] projects = new Project[]{
+                    CProjects.OPEN_SSL,
+                    CProjects.WIRESHARK,
+                    CProjects.LINUX_KERNEL
+            };
 
-        ClassModel[] classModels = new ClassModel[]{
-                new VulNotVul(),
-                new BugVul(),
-                new VulBugClear()
-        };
+            ClassModel[] classModels = new ClassModel[]{
+                    new VulNotVul(),
+                    new BugVul(),
+                    new VulBugClear()
+            };
 
-        for (Project project : projects) {
+            for (Project project : projects) {
 
-            for (ClassModel model : classModels) {
-                ExperimentSplitter[] experimentSplitters = {new GeneralSplit(pathExtended, project.getName()), new ThreeLastSplit(pathExtended, project.getName())};
+                for (ClassModel model : classModels) {
+                    ExperimentSplitter[] experimentSplitters = {new GeneralSplit(pathExtended, project.getName()), new ThreeLastSplit(pathExtended, project.getName())};
 
 
-                for (ExperimentSplitter experimentSplitter : experimentSplitters) {
-                    List<Experiment> experimentList = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
-                    if (experimentList == null) {
-                        experimentList = experimentSplitter.generateExperiment();
-                    }
-                    Approach[] approaches = {
-                            new PureNaturalness(experimentList, model),
-                            new CodeMetricsApproach(experimentList, model),
-                            new IncludesApproach(experimentList, model),
-                            new FunctionCallsApproach(experimentList, model),
-                            new BagOfWordsApproach(experimentList, model)
-                    };
+                    for (ExperimentSplitter experimentSplitter : experimentSplitters) {
+                        List<Experiment> experimentList = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
+                        if (experimentList == null) {
+                            experimentList = experimentSplitter.generateExperiment();
+                        }
+                        Approach[] approaches = {
+                                new NaturalnessAndCM(experimentList, model),
+                                new PureNaturalness(experimentList, model),
+                                new CodeMetricsApproach(experimentList, model),
+                                new IncludesApproach(experimentList, model),
+                                new FunctionCallsApproach(experimentList, model),
+                                new BagOfWordsApproach(experimentList, model)
+                        };
 
-                    for (Approach approach : approaches) {
-                        for (String classifier : getClassifiers()) {
-                            approach.prepareInstances();
-                            runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true);
-                            runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, false);
+                        for (Approach approach : approaches) {
+                            for (String classifier : getClassifiers()) {
+                                approach.prepareInstances();
+                                runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true);
+                                runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, false);
+                            }
                         }
                     }
                 }
             }
+        } else {
+            throw new RuntimeException("Not enough arguments");
         }
 
     }

@@ -53,15 +53,17 @@ public abstract class Approach {
                 Experiment experimentdata = experiments.get(i[0]);
                 final int[] j = {0};
                 experimentdata.getTesting().keySet().forEach(fileMetaInf -> {
-                    try {
-                        Instance testingInstance = instances[1].instance(j[0]);
-                        double[] dist = classifier.distributionForInstance(testingInstance);
-                        double classif = classifier.classifyInstance(testingInstance);
-                        experimentResultMap.put(fileMetaInf.getFile(), new ExperimentResult(dist, classif, fileMetaInf, testingInstance.classValue()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        j[0]++;
+                    if (model.correspondingToTypeFile(fileMetaInf.getType()) != null) {
+                        try {
+                            Instance testingInstance = instances[1].instance(j[0]);
+                            double[] dist = classifier.distributionForInstance(testingInstance);
+                            double classif = classifier.classifyInstance(testingInstance);
+                            experimentResultMap.put(fileMetaInf.getFile(), new ExperimentResult(dist, classif, fileMetaInf, testingInstance.classValue()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            j[0]++;
+                        }
                     }
                 });
                 resultMap.put(experiment, experimentResultMap);
