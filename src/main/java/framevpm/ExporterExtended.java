@@ -187,7 +187,7 @@ public class ExporterExtended extends Exporter {
         checkFolderDestination(path);
         path += model + "/";
         checkFolderDestination(path);
-        path += approachResult.getApproach();
+        path += approachResult.getApproach() + "/";
         checkFolderDestination(path);
         RandomAccessFile raf = new RandomAccessFile(path + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.obj", "rw");
         FileOutputStream fos = new FileOutputStream(raf.getFD());

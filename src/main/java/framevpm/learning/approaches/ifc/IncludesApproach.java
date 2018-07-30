@@ -1,5 +1,6 @@
 package framevpm.learning.approaches.ifc;
 
+import framevpm.analyze.approaches.filebyfile.FileFunctionCalls;
 import framevpm.analyze.approaches.filebyfile.FileIncludes;
 import framevpm.analyze.model.Analysis;
 import framevpm.learning.approaches.Approach;
@@ -55,19 +56,30 @@ public class IncludesApproach extends Approach {
     }
 
     private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
-        String interestingClass = model.getClassList().get(0);
-        Map<String, Integer> countIncludes = new HashMap<>();
-        int[] i = {0};
+        Map<String, Map<String, Integer>> countInclude = new HashMap<>();
+        Map<String, Integer> countTotal = new HashMap<>();
+        for (String mod : model.getClassList()) {
+            countInclude.put(mod, new HashMap<>());
+            countTotal.put(mod, 0);
+        }
         experiment.forEach((file, analysis) -> {
-            if (model.correspondingToTypeFile(file.getType()).equals(interestingClass)) {
-                i[0]++;
-                analysis.get(FileIncludes.NAME).getFeatureMap().keySet().forEach(include -> countIncludes.put(include, countIncludes.getOrDefault(include, 0)+1));
+            String type = model.correspondingToTypeFile(file.getType());
+            if (type != null) {
+                countTotal.put(type, countTotal.get(type) + 1);
+                Map<String, Integer> includetoType = countInclude.get(type);
+                analysis.get(FileIncludes.NAME).getFeatureMap().keySet().forEach(fc ->
+                        includetoType.put(fc, includetoType.getOrDefault(fc, 0) + 1));
             }
         });
+        Set<String> includes = new HashSet<>();
+        for (String mod : model.getClassList()) {
+            int threshold = (countTotal.get(mod) * 3 / 100) + 1;
+            Map<String, Integer> FCfoType = countInclude.get(mod);
+            FCfoType.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> includes.add(stringIntegerEntry.getKey()));
+        }
 
-        int threshold = (i[0] * 3 / 100) + 1;
         ArrayList<Attribute> attributes = new ArrayList<>();
-        countIncludes.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
+        includes.forEach(stringEntry -> attributes.add(new Attribute(stringEntry)));
 
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;

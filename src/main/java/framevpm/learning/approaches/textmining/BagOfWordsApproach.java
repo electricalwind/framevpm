@@ -1,6 +1,7 @@
 package framevpm.learning.approaches.textmining;
 
 import framevpm.analyze.approaches.filebyfile.FileBagOfWords;
+import framevpm.analyze.approaches.filebyfile.FileIncludes;
 import framevpm.analyze.model.Analysis;
 import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
@@ -77,19 +78,30 @@ public class BagOfWordsApproach extends Approach {
     }
 
     private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
-        String interestingClass = model.getClassList().get(0);
-        Map<String, Integer> countWord = new HashMap<>();
-        int[] i = {0};
+        Map<String, Map<String, Integer>> countBow = new HashMap<>();
+        Map<String, Integer> countTotal = new HashMap<>();
+        for (String mod : model.getClassList()) {
+            countBow.put(mod, new HashMap<>());
+            countTotal.put(mod, 0);
+        }
         experiment.forEach((file, analysis) -> {
-            if (model.correspondingToTypeFile(file.getType()).equals(interestingClass)) {
-                i[0]++;
-                analysis.get(FileBagOfWords.NAME).getFeatureMap().keySet().forEach(word -> countWord.put(word, countWord.getOrDefault(word, 0) + 1));
+            String type = model.correspondingToTypeFile(file.getType());
+            if (type != null) {
+                countTotal.put(type, countTotal.get(type) + 1);
+                Map<String, Integer> bowtoType = countBow.get(type);
+                analysis.get(FileBagOfWords.NAME).getFeatureMap().keySet().forEach(fc ->
+                        bowtoType.put(fc, bowtoType.getOrDefault(fc, 0) + 1));
             }
         });
+        Set<String> bow = new HashSet<>();
+        for (String mod : model.getClassList()) {
+            int threshold = (countTotal.get(mod) * 5 / 100) + 1;
+            Map<String, Integer> bowtoType = countBow.get(mod);
+            bowtoType.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> bow.add(stringIntegerEntry.getKey()));
+        }
 
-        int threshold = (i[0] * 5 / 100) + 1;
         ArrayList<Attribute> attributes = new ArrayList<>();
-        countWord.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
+        bow.forEach(stringEntry -> attributes.add(new Attribute(stringEntry)));
 
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;

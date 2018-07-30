@@ -19,7 +19,7 @@ public class BugVul implements ClassModel {
     public String correspondingToTypeFile(FileType fileType) {
         switch (fileType) {
             case Buggy:
-                return "Not Vulnerable";
+                return "Buggy";
             case Clear:
             case BuggyHistory:
             case VulnerableHistory:

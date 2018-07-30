@@ -31,7 +31,7 @@ public class CSVExporter {
         checkFolderDestination(path);
         path += model.getName() + "/";
         checkFolderDestination(path);
-        path += approachResult.getApproach();
+        path += approachResult.getApproach()+ "/";
         checkFolderDestination(path);
         CSVWriter writerom = new CSVWriter(new FileWriter(new File(path + approachResult.getClassifier() + "-" + approachResult.isSmote() + ".csv"), false));
 

@@ -51,26 +51,37 @@ public class FunctionCallsApproach extends Approach {
         if (type == null) return null;
         for (int i = 0; i < featureVector.size() - 1; i++) {
             String name = featureVector.get(i).name();
-            values[i] = (int) stringAnalysisMap.get(FileFunctionCalls.NAME).getFeatureMap().getOrDefault(name,0);
+            values[i] = (int) stringAnalysisMap.get(FileFunctionCalls.NAME).getFeatureMap().getOrDefault(name, 0);
         }
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
         return new SparseInstance(1, values);
     }
 
     private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
-        String interestingClass = model.getClassList().get(0);
-        Map<String, Integer> countFC = new HashMap<>();
-        int[] i = {0};
+        Map<String, Map<String, Integer>> countFC = new HashMap<>();
+        Map<String, Integer> countTotal = new HashMap<>();
+        for (String mod : model.getClassList()) {
+            countFC.put(mod, new HashMap<>());
+            countTotal.put(mod, 0);
+        }
         experiment.forEach((file, analysis) -> {
-            if (model.correspondingToTypeFile(file.getType()).equals(interestingClass)) {
-                i[0]++;
-                analysis.get(FileFunctionCalls.NAME).getFeatureMap().keySet().forEach(fc -> countFC.put(fc, countFC.getOrDefault(fc, 0) + 1));
+            String type = model.correspondingToTypeFile(file.getType());
+            if (type != null) {
+                countTotal.put(type, countTotal.get(type) + 1);
+                Map<String, Integer> FCfoType = countFC.get(type);
+                analysis.get(FileFunctionCalls.NAME).getFeatureMap().keySet().forEach(fc ->
+                        FCfoType.put(fc, FCfoType.getOrDefault(fc, 0) + 1));
             }
         });
+        Set<String> functionCalls = new HashSet<>();
+        for (String mod : model.getClassList()) {
+            int threshold = (countTotal.get(mod) * 5 / 100) + 1;
+            Map<String, Integer> FCfoType = countFC.get(mod);
+            FCfoType.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> functionCalls.add(stringIntegerEntry.getKey()));
+        }
 
-        int threshold = (i[0] * 5 / 100) + 1;
         ArrayList<Attribute> attributes = new ArrayList<>();
-        countFC.entrySet().stream().filter(stringIntegerEntry -> stringIntegerEntry.getValue() > threshold).forEach(stringIntegerEntry -> attributes.add(new Attribute(stringIntegerEntry.getKey())));
+        functionCalls.forEach(stringEntry -> attributes.add(new Attribute(stringEntry)));
 
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;
