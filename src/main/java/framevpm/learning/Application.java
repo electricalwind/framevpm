@@ -12,7 +12,9 @@ import framevpm.learning.approaches.naturalness.PureNaturalness;
 import framevpm.learning.approaches.textmining.BagOfWordsApproach;
 import framevpm.learning.model.ApproachResult;
 import framevpm.learning.model.Experiment;
+import framevpm.learning.model.classmodel.BugVul;
 import framevpm.learning.model.classmodel.ClassModel;
+import framevpm.learning.model.classmodel.VulBugClear;
 import framevpm.learning.model.classmodel.VulNotVul;
 import framevpm.learning.splitter.ExperimentSplitter;
 import framevpm.learning.splitter.nextrelease.GeneralSplit;
@@ -30,35 +32,42 @@ public class Application {
         ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
         CSVExporter csvExporter = new CSVExporter(pathExtended);
         Project[] projects = new Project[]{
-                // CProjects.OPEN_SSL,
+                CProjects.OPEN_SSL,
                 CProjects.WIRESHARK
                 //, CProjects.LINUX_KERNEL
         };
+
+        ClassModel[] classModels = new ClassModel[]{
+                new VulNotVul(),
+                new BugVul(),
+                new VulBugClear()
+        };
+
         for (Project project : projects) {
 
-            ClassModel model = new VulNotVul();
+            for (ClassModel model : classModels) {
+                ExperimentSplitter[] experimentSplitters = {new GeneralSplit(pathExtended, project.getName()), new ThreeLastSplit(pathExtended, project.getName())};
 
-            ExperimentSplitter[] experimentSplitters = {new GeneralSplit(pathExtended, project.getName()), new ThreeLastSplit(pathExtended, project.getName())};
 
+                for (ExperimentSplitter experimentSplitter : experimentSplitters) {
+                    List<Experiment> experimentList = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
+                    if (experimentList == null) {
+                        experimentList = experimentSplitter.generateExperiment();
+                    }
+                    Approach[] approaches = {
+                            new PureNaturalness(experimentList, model),
+                            new CodeMetricsApproach(experimentList, model),
+                            new IncludesApproach(experimentList, model),
+                            new FunctionCallsApproach(experimentList, model),
+                            new BagOfWordsApproach(experimentList, model)
+                    };
 
-            for (ExperimentSplitter experimentSplitter : experimentSplitters) {
-                List<Experiment> experimentList = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
-                if (experimentList == null) {
-                    experimentList = experimentSplitter.generateExperiment();
-                }
-                Approach[] approaches = {
-                        new PureNaturalness(experimentList, model),
-                        new CodeMetricsApproach(experimentList, model),
-                        new IncludesApproach(experimentList, model),
-                        new FunctionCallsApproach(experimentList, model),
-                        new BagOfWordsApproach(experimentList, model)
-                };
-
-                for (Approach approach : approaches) {
-                    for (String classifier : getClassifiers()) {
-                        approach.prepareInstances();
-                        runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true);
-                        runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, false);
+                    for (Approach approach : approaches) {
+                        for (String classifier : getClassifiers()) {
+                            approach.prepareInstances();
+                            runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true);
+                            runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, false);
+                        }
                     }
                 }
             }

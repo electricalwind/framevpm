@@ -15,15 +15,25 @@ import static data7.Utils.checkFolderDestination;
 
 public class CSVExporter {
 
-    private final String path;
+    private final String rpath;
 
     public CSVExporter(ResourcesPathExtended resourcesPathExtended) {
-        this.path = resourcesPathExtended.getStatPath();
-        checkFolderDestination(path);
+        this.rpath = resourcesPathExtended.getStatPath();
+        checkFolderDestination(rpath);
     }
 
     public void exportResultToCSV(String project, String split, ClassModel model, ApproachResult approachResult) throws IOException {
-        CSVWriter writerom = new CSVWriter(new FileWriter(new File(path + project + "-" + split + "-" + model.getName() + "-" + approachResult.getApproach() + "-" + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.csv"), false));
+        String path = rpath;
+        checkFolderDestination(path);
+        path += project + "/";
+        checkFolderDestination(path);
+        path += split + "/";
+        checkFolderDestination(path);
+        path += model.getName() + "/";
+        checkFolderDestination(path);
+        path += approachResult.getApproach();
+        checkFolderDestination(path);
+        CSVWriter writerom = new CSVWriter(new FileWriter(new File(path + approachResult.getClassifier() + "-" + approachResult.isSmote() + ".csv"), false));
 
         List<String> listClass = model.getClassList();
         int size = 7 + listClass.size();
@@ -46,7 +56,7 @@ public class CSVExporter {
                     String[] line = new String[size];
                     line[0] = experiment;
                     line[1] = file;
-                    line[2] = model.correspondingToTypeFile(experimentresult.getFileMetaInf().getType());
+                    line[2] = experimentresult.getFileMetaInf().getType().name();
                     VulnerabilityInfo vulnerabilityInfo = experimentresult.getFileMetaInf().getVulnerabilityInfo();
                     if (vulnerabilityInfo != null) {
                         line[3] = vulnerabilityInfo.getCwe();

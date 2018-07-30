@@ -6,10 +6,7 @@ import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
-import weka.core.Attribute;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.SparseInstance;
+import weka.core.*;
 
 import java.util.*;
 
@@ -53,35 +50,35 @@ public class PureNaturalness extends Approach {
         for (int i = 0; i < featureVector.size() - 1; i++) {
             String name = featureVector.get(i).name();
             values[i] = (double) stringAnalysisMap.get(name).getFeatureMap().get("cross-Entropy");
+            if (Double.isNaN(values[i])) {
+                values[i] = Double.POSITIVE_INFINITY;
+            }
         }
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
-        return new SparseInstance(1, values);
+        return new DenseInstance(1, values);
     }
 
     private ArrayList<Attribute> generateFeatureVector(Experiment experiment) {
-        Set<String> availableMesure = new HashSet<>();
+        List<String> availableMesure = new ArrayList<>();
         boolean[] first = {true};
         experiment.getTraining().forEach((file, analysis) -> {
-            analysis.keySet().stream().filter(approach -> approach.contains("Naturalness")).forEach(natural -> {
-                if (first[0]) {
-                    availableMesure.add(natural);
-                } else {
-                    if (!availableMesure.contains(natural)) {
-                        availableMesure.remove(natural);
-                    }
-                }
-            });
+            List<String> measures = new ArrayList<>();
+            analysis.keySet().stream().filter(approach -> approach.contains("Naturalness")).forEach(measures::add);
+            if (first[0]) {
+                availableMesure.addAll(measures);
+                first[0] = false;
+            } else {
+                availableMesure.retainAll(measures);
+            }
         });
 
         experiment.getTesting().forEach((file, analysis) -> {
-            analysis.keySet().stream().filter(approach -> approach.contains("Naturalness")).forEach(natural -> {
-                if (!availableMesure.contains(natural)) {
-                    availableMesure.remove(natural);
-                }
-            });
+            List<String> measures = new ArrayList<>();
+            analysis.keySet().stream().filter(approach -> approach.contains("Naturalness")).forEach(measures::add);
+            availableMesure.retainAll(measures);
         });
         ArrayList<Attribute> attributes = new ArrayList<>();
-        availableMesure.forEach(mesure-> attributes.add(new Attribute(mesure)));
+        availableMesure.forEach(mesure -> attributes.add(new Attribute(mesure)));
         attributes.add(new Attribute("theClass", model.getClassList()));
         return attributes;
     }

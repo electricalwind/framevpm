@@ -179,8 +179,17 @@ public class ExporterExtended extends Exporter {
     }
 
     public void saveApproachResult(String project, String split, String model, ApproachResult approachResult) throws IOException {
-        checkFolderDestination(resourcesPathExtended.getExperimentPath());
-        RandomAccessFile raf = new RandomAccessFile(resourcesPathExtended.getExperimentPath() + project + "-" + split + "-" + model + "-" + approachResult.getApproach() + "-" + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.obj", "rw");
+        String path = resourcesPathExtended.getExperimentPath();
+        checkFolderDestination(path);
+        path += project + "/";
+        checkFolderDestination(path);
+        path += split + "/";
+        checkFolderDestination(path);
+        path += model + "/";
+        checkFolderDestination(path);
+        path += approachResult.getApproach();
+        checkFolderDestination(path);
+        RandomAccessFile raf = new RandomAccessFile(path + approachResult.getClassifier() + "-" + approachResult.isSmote() + "-result.obj", "rw");
         FileOutputStream fos = new FileOutputStream(raf.getFD());
         ObjectOutputStream out = new ObjectOutputStream(fos);
         out.writeObject(approachResult);
@@ -189,7 +198,7 @@ public class ExporterExtended extends Exporter {
     }
 
     public ApproachResult loadExperiments(String project, String split, String model, String approach, String classifier, boolean smote) throws IOException, ClassNotFoundException {
-        File file = new File(resourcesPathExtended.getExperimentPath() + project + "-" + split + "-" + model + "-" + approach + "-" + classifier + "-" + smote + "-result.obj");
+        File file = new File(resourcesPathExtended.getExperimentPath() + project + "/" + split + "/" + model + "/" + approach + "/" + classifier + "-" + smote + "-result.obj");
         if (file.exists()) {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream read = new ObjectInputStream(fileIn);
