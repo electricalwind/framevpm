@@ -35,8 +35,8 @@ public class Application {
             ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
             CSVExporter csvExporter = new CSVExporter(pathExtended);
             Project[] projects = new Project[]{
-                    //CProjects.OPEN_SSL,
-                    //CProjects.WIRESHARK,
+                    CProjects.OPEN_SSL,
+                    CProjects.WIRESHARK,
                     CProjects.LINUX_KERNEL
             };
 
@@ -72,7 +72,7 @@ public class Application {
                         };
 
                         for (Approach approach : approaches) {
-                            System.out.println("|            Starting Approach: " + approach);
+                            System.out.println("|            Starting Approach: " + approach.getApproachName());
                             for (String classifier : getClassifiers()) {
                                 System.out.println("|                Starting Classifier: " + classifier);
                                 approach.prepareInstances();
