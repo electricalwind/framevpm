@@ -37,7 +37,6 @@ public class Gatherer {
     }
 
     public Map<String, Map<String, VulnerabilityInfo>> gather() throws IOException, ClassNotFoundException {
-        System.out.println("Starting processing: " + project);
         Data7 data7 = exporter.loadDataset(project);
         prepareVuln(data7);
         Map<String, Map<String, VulnerabilityInfo>> finalVersion = new LinkedHashMap<>();

@@ -47,9 +47,9 @@ public class Application {
             };
 
             for (Project project : projects) {
-                System.out.println("Starting Project: " + project);
+                System.out.println("|Starting Project: " + project.getName());
                 for (ClassModel model : classModels) {
-                    System.out.println("Starting Class Model: " + model.getName());
+                    System.out.println("|    Starting Class Model: " + model.getName());
                     ExperimentSplitter[] experimentSplitters = {
                             new GeneralSplit(pathExtended, project.getName()),
                             new ThreeLastSplit(pathExtended, project.getName())
@@ -57,7 +57,7 @@ public class Application {
 
 
                     for (ExperimentSplitter experimentSplitter : experimentSplitters) {
-                        System.out.println("Starting Experiment: " + experimentSplitter.getName());
+                        System.out.println("|        Starting Experiment: " + experimentSplitter.getName());
                         List<Experiment> experimentList = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
                         if (experimentList == null) {
                             experimentList = experimentSplitter.generateExperiment();
@@ -72,14 +72,14 @@ public class Application {
                         };
 
                         for (Approach approach : approaches) {
-                            System.out.println("Starting Approach: " + approach);
+                            System.out.println("|            Starting Approach: " + approach);
                             for (String classifier : getClassifiers()) {
-                                System.out.println("Starting Classifier: " + classifier);
+                                System.out.println("|                Starting Classifier: " + classifier);
                                 approach.prepareInstances();
                                 runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true);
-                                System.out.println("1/2");
+                                System.out.println("|                    1/2");
                                 runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, false);
-                                System.out.println("2/2");
+                                System.out.println("|                    2/2");
                             }
                         }
                     }
