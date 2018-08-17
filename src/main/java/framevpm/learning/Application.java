@@ -13,10 +13,7 @@ import framevpm.learning.approaches.naturalness.PureNaturalness;
 import framevpm.learning.approaches.textmining.BagOfWordsApproach;
 import framevpm.learning.model.ApproachResult;
 import framevpm.learning.model.Experiment;
-import framevpm.learning.model.classmodel.BugVul;
-import framevpm.learning.model.classmodel.ClassModel;
-import framevpm.learning.model.classmodel.VulBugClear;
-import framevpm.learning.model.classmodel.VulNotVul;
+import framevpm.learning.model.classmodel.*;
 import framevpm.learning.splitter.ExperimentSplitter;
 import framevpm.learning.splitter.nextrelease.GeneralSplit;
 import framevpm.learning.splitter.nextrelease.ReleaseSplitter;
@@ -36,15 +33,16 @@ public class Application {
             ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
             CSVExporter csvExporter = new CSVExporter(pathExtended);
             Project[] projects = new Project[]{
-                    //CProjects.OPEN_SSL,
-                    //CProjects.WIRESHARK,
+                    CProjects.OPEN_SSL,
+                    CProjects.WIRESHARK,
                     CProjects.LINUX_KERNEL
             };
 
             ClassModel[] classModels = new ClassModel[]{
-                    new VulNotVul(),
+                    //new VulNotVul(),
                     //new BugVul(),
-                    //new VulBugClear()
+                    //new VulBugClear(),
+                    new VulBNotVuln()
             };
 
             for (Project project : projects) {
