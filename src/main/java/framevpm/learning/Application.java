@@ -13,10 +13,7 @@ import framevpm.learning.approaches.naturalness.PureNaturalness;
 import framevpm.learning.approaches.textmining.BagOfWordsApproach;
 import framevpm.learning.model.ApproachResult;
 import framevpm.learning.model.Experiment;
-import framevpm.learning.model.classmodel.BugVul;
-import framevpm.learning.model.classmodel.ClassModel;
-import framevpm.learning.model.classmodel.VulBugClear;
-import framevpm.learning.model.classmodel.VulNotVul;
+import framevpm.learning.model.classmodel.*;
 import framevpm.learning.splitter.ExperimentSplitter;
 import framevpm.learning.splitter.nextrelease.GeneralSplit;
 import framevpm.learning.splitter.nextrelease.ReleaseSplitter;
@@ -42,9 +39,10 @@ public class Application {
             };
 
             ClassModel[] classModels = new ClassModel[]{
-                    new VulNotVul(),
-                    new BugVul(),
-                    new VulBugClear()
+                    //new VulNotVul(),
+                    //new BugVul(),
+                    //new VulBugClear(),
+                    new VulBNotVul()
             };
 
             for (Project project : projects) {
@@ -52,26 +50,26 @@ public class Application {
                 for (ClassModel model : classModels) {
                     System.out.println("|    Starting Class Model: " + model.getName());
                     ReleaseSplitter[] experimentSplitters = {
-                            new GeneralSplit(pathExtended, project.getName()),
+                            //new GeneralSplit(pathExtended, project.getName()),
                             new ThreeLastSplit(pathExtended, project.getName())
                     };
 
 
                     for (ReleaseSplitter experimentSplitter : experimentSplitters) {
                         System.out.println("|        Starting Experiment: " + experimentSplitter.getName());
-                        List<Experiment>[] exp = new List[2];
+                        List<Experiment>[] exp = new List[1];
                         exp[0] = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
 
                         if (exp[0] == null) {
                             exp[0] = experimentSplitter.generateExperiment();
                         }
 
-                        exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
+                        //exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
                         boolean realistic = false;
                         for (List<Experiment> experimentList : exp) {
                             Approach[] approaches = {
-                                    new NaturalnessAndCM(experimentList, model),
-                                    new PureNaturalness(experimentList, model),
+                                    //new NaturalnessAndCM(experimentList, model),
+                                    //new PureNaturalness(experimentList, model),
                                     new CodeMetricsApproach(experimentList, model),
                                     new IncludesApproach(experimentList, model),
                                     new FunctionCallsApproach(experimentList, model),
@@ -84,9 +82,9 @@ public class Application {
                                     System.out.println("|                Starting Classifier: " + classifier);
                                     approach.prepareInstances();
                                     runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, true);
-                                    System.out.println("|                    1/2");
-                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
-                                    System.out.println("|                    2/2");
+                                    //System.out.println("|                    1/2");
+                                    //runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
+                                    //System.out.println("|                    2/2");
                                 }
                             }
                             realistic = true;

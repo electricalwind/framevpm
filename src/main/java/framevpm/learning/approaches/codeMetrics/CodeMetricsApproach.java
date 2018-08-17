@@ -8,6 +8,7 @@ import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
+import framevpm.organize.model.FileType;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -168,7 +169,14 @@ public class CodeMetricsApproach extends Approach {
                 values[k] = 0;
             }
         }
-        return new DenseInstance(1, values);
+
+        double severity = 1;
+
+        if (fileMetaInf.getType() == FileType.Vulnerability && fileMetaInf.getVulnerabilityInfo()!=null) {
+            severity = fileMetaInf.getVulnerabilityInfo().getCvss();
+        }
+
+        return new DenseInstance(severity, values);
     }
 
     private static ArrayList<Attribute> generateFVCodeMetricsALL(List<String> classValues) {

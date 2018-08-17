@@ -6,6 +6,7 @@ import framevpm.learning.approaches.Approach;
 import framevpm.learning.model.Experiment;
 import framevpm.learning.model.FileMetaInf;
 import framevpm.learning.model.classmodel.ClassModel;
+import framevpm.organize.model.FileType;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -53,8 +54,16 @@ public class FunctionCallsApproach extends Approach {
             String name = featureVector.get(i).name();
             values[i] = (int) stringAnalysisMap.get(FileFunctionCalls.NAME).getFeatureMap().getOrDefault(name, 0);
         }
+
+        double severity = 1;
+
+        if (fileMetaInf.getType() == FileType.Vulnerability && fileMetaInf.getVulnerabilityInfo()!=null) {
+            severity = fileMetaInf.getVulnerabilityInfo().getCvss();
+        }
+
         values[featureVector.size() - 1] = model.getClassList().indexOf(type);
-        return new SparseInstance(1, values);
+
+        return new SparseInstance(severity, values);
     }
 
     private ArrayList<Attribute> generateFeatureVector(LinkedHashMap<FileMetaInf, Map<String, Analysis>> experiment) {
