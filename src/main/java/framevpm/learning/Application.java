@@ -50,7 +50,7 @@ public class Application {
                 for (ClassModel model : classModels) {
                     System.out.println("|    Starting Class Model: " + model.getName());
                     ReleaseSplitter[] experimentSplitters = {
-                            new GeneralSplit(pathExtended, project.getName()),
+                            //new GeneralSplit(pathExtended, project.getName()),
                             new ThreeLastSplit(pathExtended, project.getName())
                     };
 
@@ -82,9 +82,9 @@ public class Application {
                                     System.out.println("|                Starting Classifier: " + classifier);
                                     approach.prepareInstances();
                                     runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, true);
-                                    System.out.println("|                    1/2");
-                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
-                                    System.out.println("|                    2/2");
+                                    //System.out.println("|                    1/2");
+                                    //runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
+                                    //System.out.println("|                    2/2");
                                 }
                             }
                             realistic = true;
