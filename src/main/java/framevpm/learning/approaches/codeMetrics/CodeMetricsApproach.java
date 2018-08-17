@@ -163,10 +163,12 @@ public class CodeMetricsApproach extends Approach {
             }
             i++;
         }
+
         double severity = 1;
         if (fileMetaInf.getType() == FileType.Vulnerability && fileMetaInf.getVulnerabilityInfo()!=null) {
             severity = fileMetaInf.getVulnerabilityInfo().getCvss();
         }
+
         for (int k = 0; k < values.length; k++) {
             if (Double.isNaN(values[k])) {
                 values[k] = 0;
