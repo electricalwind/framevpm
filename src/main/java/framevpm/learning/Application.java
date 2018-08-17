@@ -42,7 +42,7 @@ public class Application {
             };
 
             ClassModel[] classModels = new ClassModel[]{
-                    new VulNotVul(),
+                    new VulNotVul()
                     //new BugVul(),
                     //new VulBugClear()
             };
