@@ -132,7 +132,7 @@
                     <includePluginDependencies>true</includePluginDependencies>
                     <mainClass>framevpm.learning.Application</mainClass>
                     <arguments>
-                        <argument>/Users/matthieu/Desktop/data7/</argument>
+                        <argument>/work/users/rrwemalika/data7-cvss/</argument>
                     </arguments>
                 </configuration>
             </plugin>
