@@ -166,7 +166,7 @@ public class CodeMetricsApproach extends Approach {
 
         double severity = 1;
         if (fileMetaInf.getType() == FileType.Vulnerability && fileMetaInf.getVulnerabilityInfo()!=null) {
-            severity = fileMetaInf.getVulnerabilityInfo().getCvss();
+            severity = fileMetaInf.getVulnerabilityInfo().getCvss() > 7 ? 2 : 1;
         }
 
         for (int k = 0; k < values.length; k++) {
