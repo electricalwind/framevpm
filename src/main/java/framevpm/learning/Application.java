@@ -84,9 +84,9 @@ public class Application {
                                     System.out.println("|                Starting Classifier: " + classifier);
                                     approach.prepareInstances();
                                     runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, true);
-                                    System.out.println("|                    1/2");
-                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
-                                    System.out.println("|                    2/2");
+                                    //ystem.out.println("|                    1/2");
+                                    //runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
+                                    //System.out.println("|                    2/2");
                                 }
                             }
                             realistic = true;
