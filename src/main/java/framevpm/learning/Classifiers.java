@@ -6,6 +6,7 @@ import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AdaBoostM1;
+import weka.classifiers.trees.J48;
 import weka.classifiers.trees.RandomForest;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class Classifiers {
     }
 
     public static final Classifier createJ48() {
-        return new RandomForest();
+        return new J48();
     }
 
     public static final Classifier createAda() {

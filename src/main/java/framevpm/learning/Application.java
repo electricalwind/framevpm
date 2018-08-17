@@ -36,15 +36,15 @@ public class Application {
             ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
             CSVExporter csvExporter = new CSVExporter(pathExtended);
             Project[] projects = new Project[]{
-                    CProjects.OPEN_SSL,
-                    CProjects.WIRESHARK,
+                    //CProjects.OPEN_SSL,
+                    //CProjects.WIRESHARK,
                     CProjects.LINUX_KERNEL
             };
 
             ClassModel[] classModels = new ClassModel[]{
                     new VulNotVul(),
-                    new BugVul(),
-                    new VulBugClear()
+                    //new BugVul(),
+                    //new VulBugClear()
             };
 
             for (Project project : projects) {
@@ -59,19 +59,19 @@ public class Application {
 
                     for (ReleaseSplitter experimentSplitter : experimentSplitters) {
                         System.out.println("|        Starting Experiment: " + experimentSplitter.getName());
-                        List<Experiment>[] exp = new List[2];
+                        List<Experiment>[] exp = new List[1];
                         exp[0] = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
 
                         if (exp[0] == null) {
                             exp[0] = experimentSplitter.generateExperiment();
                         }
 
-                        exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
+                        //exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
                         boolean realistic = false;
                         for (List<Experiment> experimentList : exp) {
                             Approach[] approaches = {
-                                    new NaturalnessAndCM(experimentList, model),
-                                    new PureNaturalness(experimentList, model),
+                                    //new NaturalnessAndCM(experimentList, model),
+                                    //new PureNaturalness(experimentList, model),
                                     new CodeMetricsApproach(experimentList, model),
                                     new IncludesApproach(experimentList, model),
                                     new FunctionCallsApproach(experimentList, model),
