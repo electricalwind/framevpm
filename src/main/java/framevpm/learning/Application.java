@@ -81,7 +81,7 @@ public class Application {
                                 for (String classifier : getClassifiers()) {
                                     System.out.println("|                Starting Classifier: " + classifier);
                                     approach.prepareInstances();
-                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, true);
+                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
                                     //System.out.println("|                    1/2");
                                     //runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
                                     //System.out.println("|                    2/2");
