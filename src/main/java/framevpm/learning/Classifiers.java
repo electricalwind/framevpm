@@ -45,12 +45,12 @@ public class Classifiers {
 
     public static final List<String> getClassifiers() {
         List<String> classifiers = new ArrayList<>();
-        classifiers.add("Logistic");
+        //classifiers.add("Logistic");
         classifiers.add("RandomForest");
-        classifiers.add("J48");
-        classifiers.add("Ada");
+        //classifiers.add("J48");
+        //classifiers.add("Ada");
         //classifiers.add("SVM");
-        classifiers.add("KNear");
+        //classifiers.add("KNear");
         //classifiers.add("MLPerceptron");
         return classifiers;
     }
