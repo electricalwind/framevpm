@@ -31,7 +31,8 @@ public abstract class ReleaseSplitter extends ExperimentSplitter {
                 if (fileMetaInf.getType() == FileType.Vulnerability) {
                     if (fileMetaInf.getVulnerabilityInfo() != null) {
                         if (fileMetaInf.getVulnerabilityInfo().getTimestampDiscover() > releaseT) {
-                            metaInf = new FileMetaInf(fileMetaInf.getRelease(), fileMetaInf.getFile(), FileType.Clear, null);
+                            //metaInf = new FileMetaInf(fileMetaInf.getRelease(), fileMetaInf.getFile(), FileType.Clear, null);
+                            metaInf = null;
                         } else {
                             nbVuln[0]++;
                         }
@@ -39,7 +40,10 @@ public abstract class ReleaseSplitter extends ExperimentSplitter {
                         int l = 0;
                     }
                 }
-                training.put(metaInf, stringAnalysisMap);
+
+                if(metaInf!=null){
+                    training.put(metaInf, stringAnalysisMap);
+                }
             }));
             if (nbVuln[0] > 10) {
                 Experiment experiment1 = new Experiment(experiment.getName(), training, experiment.getTesting());

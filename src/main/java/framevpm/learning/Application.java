@@ -36,15 +36,15 @@ public class Application {
             ExporterExtended exporterExtended = new ExporterExtended(pathExtended);
             CSVExporter csvExporter = new CSVExporter(pathExtended);
             Project[] projects = new Project[]{
-                    CProjects.OPEN_SSL,
-                    CProjects.WIRESHARK,
+                    //CProjects.OPEN_SSL,
+                    //CProjects.WIRESHARK,
                     CProjects.LINUX_KERNEL
             };
 
             ClassModel[] classModels = new ClassModel[]{
                     new VulNotVul(),
-                    new BugVul(),
-                    new VulBugClear()
+                    //new BugVul(),
+                    //new VulBugClear()
             };
 
             for (Project project : projects) {
@@ -52,30 +52,28 @@ public class Application {
                 for (ClassModel model : classModels) {
                     System.out.println("|    Starting Class Model: " + model.getName());
                     ReleaseSplitter[] experimentSplitters = {
-                            new GeneralSplit(pathExtended, project.getName()),
+                            //new GeneralSplit(pathExtended, project.getName()),
                             new ThreeLastSplit(pathExtended, project.getName())
                     };
 
 
                     for (ReleaseSplitter experimentSplitter : experimentSplitters) {
                         System.out.println("|        Starting Experiment: " + experimentSplitter.getName());
-                        List<Experiment>[] exp = new List[2];
-                        exp[0] = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
+                        List<Experiment> experiments = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
 
-                        if (exp[0] == null) {
-                            exp[0] = experimentSplitter.generateExperiment();
+                        if (experiments == null) {
+                            experiments = experimentSplitter.generateExperiment();
                         }
 
-                        exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
-                        boolean realistic = false;
-                        for (List<Experiment> experimentList : exp) {
+                        List<Experiment> generalExperiments = experimentSplitter.generateRealisticExperiment(experiments);
+
                             Approach[] approaches = {
-                                    new NaturalnessAndCM(experimentList, model),
-                                    new PureNaturalness(experimentList, model),
-                                    new CodeMetricsApproach(experimentList, model),
-                                    new IncludesApproach(experimentList, model),
-                                    new FunctionCallsApproach(experimentList, model),
-                                    new BagOfWordsApproach(experimentList, model)
+                                    //new NaturalnessAndCM(generalExperiments, model),
+                                    //new PureNaturalness(generalExperiments, model),
+                                    new CodeMetricsApproach(generalExperiments, model),
+                                    new IncludesApproach(generalExperiments, model),
+                                    new FunctionCallsApproach(generalExperiments, model),
+                                    new BagOfWordsApproach(generalExperiments, model)
                             };
 
                             for (Approach approach : approaches) {
@@ -83,14 +81,13 @@ public class Application {
                                 for (String classifier : getClassifiers()) {
                                     System.out.println("|                Starting Classifier: " + classifier);
                                     approach.prepareInstances();
-                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, true);
+                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true, true);
                                     System.out.println("|                    1/2");
-                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, realistic, false);
+                                    runwithSmote(exporterExtended, csvExporter, project, model, experimentSplitter, approach, classifier, true, false);
                                     System.out.println("|                    2/2");
                                 }
                             }
-                            realistic = true;
-                        }
+
                     }
                 }
             }
