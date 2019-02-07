@@ -57,14 +57,14 @@ public class Application {
 
                     for (ReleaseSplitter experimentSplitter : experimentSplitters) {
                         System.out.println("|        Starting Experiment: " + experimentSplitter.getName());
-                        List<Experiment>[] exp = new List[1];
+                        List<Experiment>[] exp = new List[2];
                         exp[0] = new ExporterExtended(pathExtended).loadExperiments(project.getName(), experimentSplitter.getName());
 
                         if (exp[0] == null) {
                             exp[0] = experimentSplitter.generateExperiment();
                         }
 
-                        //exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
+                        exp[1] = experimentSplitter.generateRealisticExperiment(exp[0]);
                         boolean realistic = false;
                         for (List<Experiment> experimentList : exp) {
                             Approach[] approaches = {
@@ -87,7 +87,7 @@ public class Application {
                                     //System.out.println("|                    2/2");
                                 }
                             }
-                            realistic = true;
+                            realistic = false;
                         }
                     }
                 }
